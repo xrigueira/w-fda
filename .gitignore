@@ -1,0 +1,5 @@
+# Ingnore the venv
+venv
+
+# Ignore the data
+data
