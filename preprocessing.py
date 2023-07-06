@@ -3,7 +3,7 @@ import os
 from checkGaps import checkGaps
 from normalizer import normalizer
 from joiner import joiner
-from mfilterer import mfilterer
+from filterer import mfilterer
 
 """Preprocessing starts from the original univariate txt files."""
 
