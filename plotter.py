@@ -1,8 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-"""this file is used to plot the multivariate
-data of each data in a data base."""
+"""This file is used to plot the multivariate
+data of each day in a data base."""
 
 # Read the data
 station = 901
