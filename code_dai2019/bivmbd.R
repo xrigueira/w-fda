@@ -64,4 +64,3 @@ x1=y[1:p,]
 x2=y[(p+1):(2*p),]
 dp=bivmbd(y)
 outbiv(x1,x2,dp,factor=3)
-     

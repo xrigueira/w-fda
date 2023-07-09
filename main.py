@@ -117,5 +117,6 @@ fig.update_layout(
 # Show the plot
 fig.show()
 
-# Now I have to implement the other method from Dai and Genton 2019
+# CONTINUE HERE: Try to implement the models from Dai2019. Do it another file. 
+# Go step by step. Try to create clean data first and contaminate it after.
 
