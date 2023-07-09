@@ -1,5 +1,4 @@
-# Try to run get_msa in this Python file and print its results
-# or put them in a Pandas database
+# Novelty: amplitude, non parametric detector, GANs for the generation of artificial WQ data.
 
 import csv
 import numpy as np
@@ -118,5 +117,5 @@ fig.update_layout(
 # Show the plot
 fig.show()
 
-
+# Now I have to implement the other method from Dai and Genton 2019
 
