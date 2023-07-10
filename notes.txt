@@ -21,7 +21,7 @@ MDATA1 contains the code for Model 9 of the paper Dai2019.
 MDATA4 contains the code for Model 10 of the paper Dai2019.
 
 These functions depend on 4 parameters:
-    p is the number of variables.
+    p is the number of data points.
     n is the number of curves of each var.
     c is the contamination level.
-    d is already defined as 2.
+    d is the number of variables.

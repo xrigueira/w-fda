@@ -96,6 +96,7 @@ def outDec(magnitude, shape, amplitude):
     # plt.plot(magnitude_crushed, np.arange(0, len(magnitude_crushed)), label = 'magnitude')
     # plt.plot(shape_crushed, np.arange(0, len(shape_crushed)), label = 'shape')
     # plt.plot(amplitude_crushed, np.arange(0, len(amplitude_crushed)), label = 'amplitude')
+    # plt.title('Crushed magnitude, shape, and amplitude')
     # plt.legend(loc='best')
     # plt.show()
 
@@ -103,7 +104,7 @@ def outDec(magnitude, shape, amplitude):
     kl_magnitude = KneeLocator(magnitude_crushed, np.arange(0, len(magnitude_crushed)), curve='convex', direction='decreasing')
     kl_magnitude_point = kl_magnitude.knee
     # kl_magnitude.plot_knee()
-    # kl_mag.plot_knee()
+    # plt.show()
 
     kl_shape = KneeLocator(shape_crushed, np.arange(0, len(shape_crushed)), curve='convex', direction='decreasing')
     kl_shape_point = kl_shape.knee
