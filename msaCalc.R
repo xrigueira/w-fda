@@ -2,7 +2,7 @@
 # shape, amplitude of each function in the dataset.
 
 # Supress warnings
-options(warn=-1)
+options(warn = -1)
 
 # Load the libraries
 library(tidyverse)
@@ -52,9 +52,10 @@ get_msa <- function() {
     msa <- cbind(magnitude_shape, amplitude)
     print("[INFO] msa obtained")
 
-    # # Extract the real outliers to check the results
-    # real_outliers <- real_outdec(mts, station)
-    # print("[INFO] ground truth outliers extracted")
+    # Extract the real outliers to check the results
+    real_outliers <- real_outdec(mts, station)
+    print("[INFO] ground truth outliers extracted")
+    print(real_outliers)
 
     # Get ending time
     end_time <- Sys.time()

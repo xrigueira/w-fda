@@ -1,8 +1,3 @@
-# Include the necessary libraries
-# library(dplyr)
-library(mlmts)
-library(plotly)
-library(tidyverse)
 
 # Function to get time data from the user
 time_getter <- function() {
@@ -66,7 +61,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                 for (j in months) {
 
-                    mat <- (data.matrix(select(filter(df, year == i & month == j), variables)))
+                    mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j), variables)))
 
                     if ((nrow(mat) %% 2) == 1) {
 
@@ -112,7 +107,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                 for (j in months) {
 
-                    mat <- (data.matrix(select(filter(df, year == i & month == j), variables)))
+                    mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j), variables)))
 
                     if ((nrow(mat) %% 2) == 1) {
 
@@ -156,7 +151,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                 for (j in number_months) {
 
-                    mat <- (data.matrix(select(filter(df, year == i & month == j), variables)))
+                    mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j), variables)))
 
                     if ((nrow(mat) %% 2) == 1) {
 
@@ -201,7 +196,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                 for (j in number_months) {
 
-                    mat <- (data.matrix(select(filter(df, year == i & month == j), variables)))
+                    mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j), variables)))
 
                     if ((nrow(mat) %% 2) == 1) {
 
@@ -252,7 +247,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                         if (j >= month_start & i == year_start) {
 
-                            mat <- (data.matrix(select(filter(df, year == i & month == j), variables)))
+                            mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j), variables)))
 
                             if ((nrow(mat) %% 2) == 1) {
 
@@ -282,7 +277,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                         } else if (i > year_start & i < year_end) {
 
-                            mat <- (data.matrix(select(filter(df, year == i & month == j), variables)))
+                            mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j), variables)))
 
                             if ((nrow(mat) %% 2) == 1) {
 
@@ -312,7 +307,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                         } else if (j <= month_end & i == year_end) {
 
-                            mat <- (data.matrix(select(filter(df, year == i & month == j), variables)))
+                            mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j), variables)))
 
                             if ((nrow(mat) %% 2) == 1) {
 
@@ -354,7 +349,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                 if (i != 0) {
 
-                    mat <- (data.matrix(select(filter(df, week == i), variables)))
+                    mat <- (data.matrix(dplyr::select(filter(df, week == i), variables)))
 
                     if ((nrow(mat) %% 2) == 1) {
 
@@ -404,10 +399,10 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                 for (k in weeks) {
 
-                    mat <- (data.matrix(select(filter(df_sub, weekOrder == j & week == k), variables)))
+                    mat <- (data.matrix(dplyr::select(filter(df_sub, weekOrder == j & week == k), variables)))
 
                     # Select the first 7 rows of the corresponding range for the columns startDate and endDate
-                    dates <- select(filter(df, weekOrder == j & week == k), c(startDate, endDate))[1:7, ]
+                    dates <- dplyr::select(filter(df, weekOrder == j & week == k), c(startDate, endDate))[1:7, ]
 
                     # Remove the dashes, unname it and turn into char
                     dates <- as.character(unname(subset(dates, startDate != "-" & endDate != "-")))
@@ -465,10 +460,10 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
             for (k in weeks) {
 
-                mat <- (data.matrix(select(filter(df_sub, week == k), variables)))
+                mat <- (data.matrix(dplyr::select(filter(df_sub, week == k), variables)))
 
                 # Select the first 7 rows of the corresponding range for the columns startDate and endDate
-                dates <- select(filter(df_sub, week == k), c(startDate, endDate))[1:7, ]
+                dates <- dplyr::select(filter(df_sub, week == k), c(startDate, endDate))[1:7, ]
 
                 # Remove the dashes, unname it and turn into char
                 dates <- as.character(unname(subset(dates, startDate != "-" & endDate != "-")))
@@ -531,10 +526,10 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                 for (k in weeks) {
 
-                    mat <- (data.matrix(select(filter(df_sub, week == k), variables)))
+                    mat <- (data.matrix(dplyr::select(filter(df_sub, week == k), variables)))
 
                     # Select the first 7 rows of the corresponding range for the columns startDate and endDate
-                    dates <- select(filter(df_sub, week == k), c(startDate, endDate))[1:7, ]
+                    dates <- dplyr::select(filter(df_sub, week == k), c(startDate, endDate))[1:7, ]
 
                     # Remove the dashes, unname it and turn into char
                     dates <- as.character(unname(subset(dates, startDate != "-" & endDate != "-")))
@@ -587,7 +582,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                     for (k in days) {
 
-                        mat <- (data.matrix(select(filter(df, year == i & month == j & day == k), variables)))
+                        mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j & day == k), variables)))
 
                         if ((nrow(mat) %% 2) == 1) {
 
@@ -632,7 +627,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                     for (k in days) {
 
-                        mat <- (data.matrix(select(filter(df, year == i & month == j & day == k), variables)))
+                        mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j & day == k), variables)))
 
                         if ((nrow(mat) %% 2) == 1) {
 
@@ -677,7 +672,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                     for (k in days) {
 
-                        mat <- (data.matrix(select(filter(df, year == i & month == j & day == k), variables)))
+                        mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j & day == k), variables)))
 
                         if ((nrow(mat) %% 2) == 1) {
 
@@ -721,7 +716,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                     for (k in number_days) {
 
-                        mat <- (data.matrix(select(filter(df, year == i & month == j & day == k), variables)))
+                        mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j & day == k), variables)))
 
                         if ((nrow(mat) %% 2) == 1) {
 
@@ -767,7 +762,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                     for (k in number_days) {
 
-                        mat <- (data.matrix(select(filter(df, year == i & month == j & day == k), variables)))
+                        mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j & day == k), variables)))
 
                         if ((nrow(mat) %% 2) == 1) {
 
@@ -814,7 +809,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                     for (k in number_days) {
 
-                        mat <- (data.matrix(select(filter(df, year == i & month == j & day == k), variables)))
+                        mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j & day == k), variables)))
 
                         if ((nrow(mat) %% 2) == 1) {
 
@@ -875,7 +870,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
                     for (k in days) {
 
-                        mat <- (data.matrix(select(filter(df, year == i & month == j & day == k), variables)))
+                        mat <- (data.matrix(dplyr::select(filter(df, year == i & month == j & day == k), variables)))
 
                         if ((nrow(mat) %% 2) == 1) {
 

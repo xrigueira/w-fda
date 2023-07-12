@@ -29,7 +29,7 @@ amplitude = msa[:, 2]
 outliers_in_data = outDec(magnitude=magnitude, shape=shape, amplitude=amplitude)
 
 # Get time stamps
-#########Turn this into a function#########
+######### Turn this into a function #########
 
 # Define file path
 data_file = 'data/labeled_901_pro.csv'
@@ -71,9 +71,34 @@ indexkNN = np.where(distances.mean(axis=1) >= np.quantile(distances.mean(axis=1)
 valueskNN = msa[indexkNN]
 timestampskNN = timestamps[indexkNN]
 
-# # Plot distance
+print(timestampskNN)
+
+# # # Plot distance
+# # fig = go.Figure(data=[go.Scatter3d(x=magnitude, y=shape, z=amplitude, mode='markers', 
+# #                                 marker=dict(color=distances.mean(axis=1), colorscale='Viridis', colorbar=dict(title='Distance')),
+# #                                 hovertemplate='<b>Timestamp:</b> %{text}<br>'
+# #                                 '<b>Magnitude:</b> %{x}<br>'
+# #                                 '<b>Shape:</b> %{y}<br>'
+# #                                 '<b>Amplitude:</b> %{z}<br>'
+# #                                 '<b>Distance:</b> %{marker.color}<extra></extra>',
+# #                                 text=unique_days)])
+
+# # # Set layout options
+# # fig.update_layout(
+# #     scene=dict(
+# #         xaxis=dict(title='Magnitude'),
+# #         yaxis=dict(title='Shape'),
+# #         zaxis=dict(title='Amplitude')
+# #     ),
+# #     title='Distance MSA Plot'
+# # )
+
+# # # Show the plot
+# # fig.show()
+
+# # Plot outliers
 # fig = go.Figure(data=[go.Scatter3d(x=magnitude, y=shape, z=amplitude, mode='markers', 
-#                                 marker=dict(color=distances.mean(axis=1), colorscale='Viridis', colorbar=dict(title='Distance')),
+#                                 marker=dict(color=np.where(np.isin(np.arange(len(magnitude)), indexkNN), 'red', 'blue'), colorscale=[[0, 'blue'], [1, 'red']], colorbar=dict(title='Outlier')),
 #                                 hovertemplate='<b>Timestamp:</b> %{text}<br>'
 #                                 '<b>Magnitude:</b> %{x}<br>'
 #                                 '<b>Shape:</b> %{y}<br>'
@@ -88,35 +113,12 @@ timestampskNN = timestamps[indexkNN]
 #         yaxis=dict(title='Shape'),
 #         zaxis=dict(title='Amplitude')
 #     ),
-#     title='Distance MSA Plot'
+#     title='Outliers MSA Plot'
 # )
 
 # # Show the plot
 # fig.show()
 
-# Plot outliers
-fig = go.Figure(data=[go.Scatter3d(x=magnitude, y=shape, z=amplitude, mode='markers', 
-                                marker=dict(color=np.where(np.isin(np.arange(len(magnitude)), indexkNN), 'red', 'blue'), colorscale=[[0, 'blue'], [1, 'red']], colorbar=dict(title='Outlier')),
-                                hovertemplate='<b>Timestamp:</b> %{text}<br>'
-                                '<b>Magnitude:</b> %{x}<br>'
-                                '<b>Shape:</b> %{y}<br>'
-                                '<b>Amplitude:</b> %{z}<br>'
-                                '<b>Distance:</b> %{marker.color}<extra></extra>',
-                                text=unique_days)])
-
-# Set layout options
-fig.update_layout(
-    scene=dict(
-        xaxis=dict(title='Magnitude'),
-        yaxis=dict(title='Shape'),
-        zaxis=dict(title='Amplitude')
-    ),
-    title='Outliers MSA Plot'
-)
-
-# Show the plot
-fig.show()
-
-# CONTINUE HERE: Try to implement the models from Dai2019. Do it another file. 
-# Go step by step. Try to create clean data first and contaminate it after.
+# # CONTINUE HERE: Try to implement the models from Dai2019. Do it another file. 
+# # Go step by step. Try to create clean data first and contaminate it after.
 
