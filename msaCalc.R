@@ -66,3 +66,6 @@ get_msa <- function() {
     return(msa)
 
 }
+
+# This line is just to run msaCalc.R outside the Python environment
+# msa <- get_msa()

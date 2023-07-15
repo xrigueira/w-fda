@@ -71,8 +71,6 @@ indexkNN = np.where(distances.mean(axis=1) >= np.quantile(distances.mean(axis=1)
 valueskNN = msa[indexkNN]
 timestampskNN = timestamps[indexkNN]
 
-print(timestampskNN)
-
 # # # Plot distance
 # # fig = go.Figure(data=[go.Scatter3d(x=magnitude, y=shape, z=amplitude, mode='markers', 
 # #                                 marker=dict(color=distances.mean(axis=1), colorscale='Viridis', colorbar=dict(title='Distance')),
@@ -118,6 +116,54 @@ print(timestampskNN)
 
 # # Show the plot
 # fig.show()
+
+# Plot comparison to labeled outliers
+from real_outdec import real_outdec
+
+real_outliers = real_outdec(station=901)
+
+# Define your arrays: magnitude, shape, amplitude
+
+# Create an array of outlier indices (indexkNN)
+outlier_indices = np.array(indexkNN)
+
+# Create an array of real outlier indices
+real_outlier_indices = np.array(real_outliers)
+
+# Plot outliers
+fig = go.Figure(data=[go.Scatter3d(x=magnitude, y=shape, z=amplitude, mode='markers',
+        marker=dict(
+            color=['green' if i in real_outlier_indices and i in outlier_indices
+                else 'blue' if i in real_outlier_indices
+                else 'red' if i in outlier_indices
+                else 'black'  # Non-outliers in black
+                for i in range(len(magnitude))
+                ],
+            colorscale=[[0, 'blue'], [0.5, 'red'], [1, 'green']],
+            colorbar=dict(title='Leyend')
+        ),
+        hovertemplate='<b>Timestamp:</b> %{text}<br>'
+                    '<b>Magnitude:</b> %{x}<br>'
+                    '<b>Shape:</b> %{y}<br>'
+                    '<b>Amplitude:</b> %{z}<br>'
+                    '<b>Distance:</b> %{marker.color}<extra></extra>',
+        text=unique_days
+    )
+])
+
+# Set layout options
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(title='Magnitude'),
+        yaxis=dict(title='Shape'),
+        zaxis=dict(title='Amplitude')
+    ),
+    title='Outliers MSA Plot'
+)
+
+# Show the plot
+fig.show()
+
 
 # # CONTINUE HERE: Try to implement the models from Dai2019. Do it another file. 
 # # Go step by step. Try to create clean data first and contaminate it after.

@@ -20,13 +20,10 @@ real_outdec <- function(mts, station) {
     # Thresholding operation: values above 0.5 set to 1, rest set to 0
     average_labels <- ifelse(average_labels >= 0.5, 1, 0)
 
-    # Sort
-    average_labels <- sort(average_labels)
-
-    # Get those labeled as anomalies (1)
-    average_labels <- average_labels[average_labels == 1]
+    # Get the index of the days labeled as 1
+    outliers_indexes <- which(average_labels == 1)
 
     # Return the resulting numeric object with named values
-    return(average_labels)
+    return(outliers_indexes)
 
 }

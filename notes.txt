@@ -25,3 +25,10 @@ These functions depend on 4 parameters:
     n is the number of curves of each var.
     c is the contamination level.
     d is the number of variables.
+
+Los outliers suelen ser por niveles elevados y oscilaciones acusadas.
+
+Si quiero hacer la validación con los modelos de Dai2019 tengo que ver
+como implementar Random Fields en Python. Igual puedo hacer un buen prompt
+donde se explica lo que hacer el paper (copiar su texto) y pasarselo a
+ChatGPT.
