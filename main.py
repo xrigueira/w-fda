@@ -71,51 +71,51 @@ indexkNN = np.where(distances.mean(axis=1) >= np.quantile(distances.mean(axis=1)
 valueskNN = msa[indexkNN]
 timestampskNN = timestamps[indexkNN]
 
-# # # Plot distance
-# # fig = go.Figure(data=[go.Scatter3d(x=magnitude, y=shape, z=amplitude, mode='markers', 
-# #                                 marker=dict(color=distances.mean(axis=1), colorscale='Viridis', colorbar=dict(title='Distance')),
-# #                                 hovertemplate='<b>Timestamp:</b> %{text}<br>'
-# #                                 '<b>Magnitude:</b> %{x}<br>'
-# #                                 '<b>Shape:</b> %{y}<br>'
-# #                                 '<b>Amplitude:</b> %{z}<br>'
-# #                                 '<b>Distance:</b> %{marker.color}<extra></extra>',
-# #                                 text=unique_days)])
+# Plot distance
+fig = go.Figure(data=[go.Scatter3d(x=magnitude, y=shape, z=amplitude, mode='markers', 
+                                marker=dict(color=distances.mean(axis=1), colorscale='Viridis', colorbar=dict(title='Distance')),
+                                hovertemplate='<b>Timestamp:</b> %{text}<br>'
+                                '<b>Magnitude:</b> %{x}<br>'
+                                '<b>Shape:</b> %{y}<br>'
+                                '<b>Amplitude:</b> %{z}<br>'
+                                '<b>Distance:</b> %{marker.color}<extra></extra>',
+                                text=unique_days)])
 
-# # # Set layout options
-# # fig.update_layout(
-# #     scene=dict(
-# #         xaxis=dict(title='Magnitude'),
-# #         yaxis=dict(title='Shape'),
-# #         zaxis=dict(title='Amplitude')
-# #     ),
-# #     title='Distance MSA Plot'
-# # )
+# Set layout options
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(title='Magnitude'),
+        yaxis=dict(title='Shape'),
+        zaxis=dict(title='Amplitude')
+    ),
+    title='Distance MSA Plot'
+)
 
-# # # Show the plot
-# # fig.show()
+# Show the plot
+fig.show()
 
-# # Plot outliers
-# fig = go.Figure(data=[go.Scatter3d(x=magnitude, y=shape, z=amplitude, mode='markers', 
-#                                 marker=dict(color=np.where(np.isin(np.arange(len(magnitude)), indexkNN), 'red', 'blue'), colorscale=[[0, 'blue'], [1, 'red']], colorbar=dict(title='Outlier')),
-#                                 hovertemplate='<b>Timestamp:</b> %{text}<br>'
-#                                 '<b>Magnitude:</b> %{x}<br>'
-#                                 '<b>Shape:</b> %{y}<br>'
-#                                 '<b>Amplitude:</b> %{z}<br>'
-#                                 '<b>Distance:</b> %{marker.color}<extra></extra>',
-#                                 text=unique_days)])
+# Plot outliers
+fig = go.Figure(data=[go.Scatter3d(x=magnitude, y=shape, z=amplitude, mode='markers', 
+                                marker=dict(color=np.where(np.isin(np.arange(len(magnitude)), indexkNN), 'red', 'black'), colorscale=[[0, 'black'], [1, 'red']], colorbar=dict(title='Outlier')),
+                                hovertemplate='<b>Timestamp:</b> %{text}<br>'
+                                '<b>Magnitude:</b> %{x}<br>'
+                                '<b>Shape:</b> %{y}<br>'
+                                '<b>Amplitude:</b> %{z}<br>'
+                                '<b>Distance:</b> %{marker.color}<extra></extra>',
+                                text=unique_days)])
 
-# # Set layout options
-# fig.update_layout(
-#     scene=dict(
-#         xaxis=dict(title='Magnitude'),
-#         yaxis=dict(title='Shape'),
-#         zaxis=dict(title='Amplitude')
-#     ),
-#     title='Outliers MSA Plot'
-# )
+# Set layout options
+fig.update_layout(
+    scene=dict(
+        xaxis=dict(title='Magnitude'),
+        yaxis=dict(title='Shape'),
+        zaxis=dict(title='Amplitude')
+    ),
+    title='Outliers MSA Plot'
+)
 
-# # Show the plot
-# fig.show()
+# Show the plot
+fig.show()
 
 # Plot comparison to labeled outliers
 from real_outdec import real_outdec
