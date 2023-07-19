@@ -30,6 +30,8 @@ def mfilterer(File, timeframe, timestep):
         limit_consecNaN_a = 192
         limit_numNaN_b = 192
         limit_consecNaN_b = 24
+        limit_numNaN_c = 24
+        limit_consecNaN_c = 8
         lenMonth = 2976
         lenWeek = 627
 
@@ -178,17 +180,17 @@ def mfilterer(File, timeframe, timestep):
                             numNaN.append(df[l].isnull().sum())
                             consecNaN.append(max(df[l].isnull().astype(int).groupby(df[l].notnull().astype(int).cumsum()).sum()))
 
-                        # Count the number of NaN higher than 20 and the number of consecNaN higher than 8
-                        count_numNaN = sum(map(lambda x: x >= 20, numNaN))
-                        count_consecNaN = sum(map(lambda x: x >= 8, consecNaN))
+                        # Count the number of NaN higher than 24 and the number of consecNaN higher than 8
+                        count_numNaN = sum(map(lambda x: x >= limit_numNaN_c, numNaN))
+                        count_consecNaN = sum(map(lambda x: x >= limit_consecNaN_c, consecNaN))
                         
                         # print(k, j, i)
                         # print(numNaN, consecNaN)
                         # print(count_numNaN, count_consecNaN)
                         
-                        # Get the first and last index of those months with too many empty (or consecutive) values 
-                        # in several variables (NaN in this case)
-                        if count_numNaN >= 3 or count_consecNaN >= 3:
+                        # Get the first and last index of those days with too many empty (or consecutive) values 
+                        # in one variable (NaN in this case)
+                        if count_numNaN >= 1 or count_consecNaN >= 1:
                             indexInit.append(df.index[0])
                             indexEnd.append(df.index[-1])
                         

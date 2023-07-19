@@ -18,7 +18,7 @@ source("msCalc.R")
 source("aCalc.R")
 source("real-outdec.R")
 
-get_msa <- function() {
+get_msa <- function(projections, basis) {
 
     # Get starting time
     start_time <- Sys.time()
@@ -41,11 +41,11 @@ get_msa <- function() {
     print("[INFO] mts obtained")
 
     # Directional outlyingness (magnitude and shape)
-    magnitude_shape <- get_magnitude_shape(mts)
+    magnitude_shape <- get_magnitude_shape(mts, projections)
     print("[INFO] dirrectional outlyingness obtained")
 
     # Amplitudes
-    amplitude <- get_amplitude(mts, station)
+    amplitude <- get_amplitude(mts, basis, station)
     print("[INFO] amplitude obtained")
 
     # Get magnitude, shape, and amplitude (msa) object by combining magnitude_shape and amplitude
@@ -68,4 +68,4 @@ get_msa <- function() {
 }
 
 # This line is just to run msaCalc.R outside the Python environment
-# msa <- get_msa()
+# msa <- get_msa(projections = 200, basis = 32)

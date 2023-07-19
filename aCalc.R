@@ -3,7 +3,7 @@
 # library("reticulate")
 # use_python("C:/Users/BAYESIA 2/OneDrive - Universidade de Vigo/1_Ph.D/1_Code/m-fdaPy/venv/Scripts/python.exe")
 
-get_amplitude <- function(mts, station) {
+get_amplitude <- function(mts, basis, station) {
 
     # Matrix to create the univariate fdata object
     mat <- matrix(ncol = nrow(mts$data[[1]]), nrow = length(mts$time))
@@ -32,7 +32,7 @@ get_amplitude <- function(mts, station) {
 
         # Convert to functional data with a corr >= 0.95
         corr <- 0
-        n_basis <- 32
+        n_basis <- basis
 
         while (corr < 0.95) {
 

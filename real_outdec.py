@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def real_outdec(station):
+def real_outdec(station, real_outlier_threshold):
     # Read the csv file
     df = pd.read_csv(f"data/labeled_{station}_pro.csv", sep=',', encoding='utf-8')
     
@@ -18,7 +18,7 @@ def real_outdec(station):
     average_labels = average_label.values
 
     # Thresholding operation: values above 0.5 set to 1, rest set to 0
-    average_labels = np.where(average_labels >= 0.5, 1, 0)
+    average_labels = np.where(average_labels >= real_outlier_threshold, 1, 0)
 
     # Get the index of the days labeled as 1
     outliers_indexes = np.where(average_labels == 1)[0]

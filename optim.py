@@ -1,7 +1,9 @@
 # Novelty: amplitude, non parametric detector, GANs for the generation of artificial WQ data.
 
 import csv
+import time
 import numpy as np
+import pandas as pd
 import rpy2.robjects as robjects
 import plotly.graph_objects as go
 
@@ -225,22 +227,57 @@ if __name__ == '__main__':
     
     station = 901
     
-    # Create a class instance
-    msa_instance = MSA(station=station, projections=200, basis=32, detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.5)
+    range_projections = [*range(100, 300, 100)]
+    range_basis = [*range(12, 102, 52)]
+    range_detection_threshold = [*range(0, 45, 15)]
+    range_contamination = [0, 0.1, 0.2]
+    range_neighbors = [*range(0, 30, 10)]
+    range_real_outliers_threshold = [0.1, 0.3, 0.5]
+    
+    # Get the data for each combination, save it and process it
+    results = pd.DataFrame(columns=['projections', 'basis', 'detection_threshold', 'contamination',
+                                    'neighbors', 'real_outliers_threshold', 'similarity'])
+    
+    for projections in range_projections:
+        
+        for basis in range_basis:
+            
+            for detection_threshold in range_detection_threshold:
+                
+                for contamination in range_contamination:
+                    
+                    for neighbors in range_neighbors:
+                        
+                        for real_outliers_threshold in range_real_outliers_threshold:
+                            
+                            t1 = time.time()
+                            
+                            # Create a class instance
+                            msa_instance = MSA(station=station, projections=200, basis=32, detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.5)
 
-    # Get the timestamps
-    msa_instance.get_timestamps()
-    
-    # Calculate magnitude, shape, and amplitude
-    msa_instance.call_msa()
-    
-    # Detect outliers if any
-    msa_instance.outlier_detector()
-    
-    # Plot the results
-    msa_instance.plots()
-    
-    # Calculate accuracy
-    similarity = msa_instance.metric()
+                            # Get the timestamps
+                            msa_instance.get_timestamps()
+                            
+                            # Calculate magnitude, shape, and amplitude
+                            msa_instance.call_msa()
+                            
+                            # Detect outliers if any
+                            msa_instance.outlier_detector()
+                            
+                            # Plot the results
+                            # msa_instance.plots()
+                            
+                            # Calculate accuracy
+                            similarity = msa_instance.metric()
+                            
+                            t2 = time.time() - t1
+                            
+                            print(f'Run time: {round(t2, ndigits=2)} seconds')
+                            
+                            # Add the results of each iteration to the dataframe
+                            results.loc[len(results.index)] = [projections, basis, detection_threshold, contamination, neighbors, real_outliers_threshold, similarity]
+
+    # Save the results
+    results.to_csv(f'results.csv', sep=',', encoding='utf-8', index=True)
 
 

@@ -1,4 +1,4 @@
-get_magnitude_shape <- function(mts){
+get_magnitude_shape <- function(mts, projections){
 
     # Determine the dimensions of the matrix
     n <- length(mts$data)
@@ -17,7 +17,7 @@ get_magnitude_shape <- function(mts){
         }
     }
 
-    dirout <- dir_out(matrix_data, return_distance = TRUE)
+    dirout <- dir_out(dts = matrix_data, n_projections = projections, seed = 0, return_distance = TRUE)
 
     magnitude_shape <- dirout$ms_matrix
 

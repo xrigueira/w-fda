@@ -27,7 +27,7 @@ def empirical_cdf(data):
     return x, y
 
 
-def outDec(magnitude, shape, amplitude):
+def outDec(magnitude, shape, amplitude, detection_threshold):
     
     """This function analyzes if there are outliers in the data"""
     
@@ -128,7 +128,7 @@ def outDec(magnitude, shape, amplitude):
             kl_shape_point = 100
         if (kl_amplitude_point is None):
             kl_amplitude_point = 100
-        if (kl_magnitude_point <= 15) or (kl_shape_point <= 15) or (kl_amplitude_point <= 15):
+        if (kl_magnitude_point <= detection_threshold) or (kl_shape_point <= detection_threshold) or (kl_amplitude_point <= detection_threshold):
             outliers_in_data = True
         else:
             outliers_in_data = False
