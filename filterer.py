@@ -30,8 +30,8 @@ def mfilterer(File, timeframe, timestep):
         limit_consecNaN_a = 192
         limit_numNaN_b = 192
         limit_consecNaN_b = 24
-        limit_numNaN_c = 8
-        limit_consecNaN_c = 4
+        limit_numNaN_c = 20
+        limit_consecNaN_c = 12
         lenMonth = 2976
         lenWeek = 627
 

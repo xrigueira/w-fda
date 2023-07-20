@@ -221,9 +221,13 @@ class MSA():
         intersection = len(real_outliers_indices_set.intersection(outliers_indices_set))
         union = len(real_outliers_indices_set.union(outliers_indices_set))
         
-        print('Number of matching outliers', intersection)
+        # Calculate the Jaccard similarity index
+        jaccard_index = intersection / union if union > 0 else 1.0
         
-        return intersection / union if union > 0 else 1.0
+        # Calculate the raw accuracy score
+        accuracy = intersection / len(real_outliers_indices)
+        
+        return jaccard_index, accuracy
 
 
 if __name__ == '__main__':
@@ -246,7 +250,8 @@ if __name__ == '__main__':
     msa_instance.plots()
     
     # Calculate accuracy
-    similarity = msa_instance.metric()
-    print(similarity)
+    jaccard_index, accuracy = msa_instance.metric()
+    print('Jaccard similary index:', jaccard_index)
+    print('Accuracy:', accuracy)
 
 
