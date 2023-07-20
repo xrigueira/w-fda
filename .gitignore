@@ -3,6 +3,7 @@ venv
 
 # Ignore the images
 images
+images_gaps
 
 # Ignore the data
 data
