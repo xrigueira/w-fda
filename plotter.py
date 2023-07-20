@@ -12,7 +12,7 @@ data = pd.read_csv(f'data/labeled_{station}_pro.csv', sep=',', encoding='utf-8',
 data.set_index('date', inplace=True)
 
 # Drop not needed columns
-data = data.drop(data.columns[6:-1], axis=1)
+data = data.drop(data.columns[4:-1], axis=1)
 
 # Normalize the data
 from sklearn.preprocessing import MinMaxScaler

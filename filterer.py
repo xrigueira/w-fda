@@ -30,8 +30,8 @@ def mfilterer(File, timeframe, timestep):
         limit_consecNaN_a = 192
         limit_numNaN_b = 192
         limit_consecNaN_b = 24
-        limit_numNaN_c = 24
-        limit_consecNaN_c = 8
+        limit_numNaN_c = 8
+        limit_consecNaN_c = 4
         lenMonth = 2976
         lenWeek = 627
 
@@ -158,27 +158,22 @@ def mfilterer(File, timeframe, timestep):
 
         indexInit, indexEnd = [], []
         numNaN, consecNaN = [], []
+        
         for i in years:
-
-            df = df.loc[df['year'] == i]
 
             for j in months:
 
-                df = df.loc[df['month'] == j]
-
                 for k in days:
 
-                    df = df.loc[df['day'] == k]
+                    filtered_df = df.loc[(df['year'] == i) & (df['month'] == j) & (df['day'] == k)]
 
-                    if df.empty == True:
-                        pass
-                    elif df.empty == False:
+                    if not filtered_df.empty:
                     
                         # Get total number of NaN and the max consecutive NaNs
                         for l in cols:
-                            
-                            numNaN.append(df[l].isnull().sum())
-                            consecNaN.append(max(df[l].isnull().astype(int).groupby(df[l].notnull().astype(int).cumsum()).sum()))
+
+                            numNaN.append(filtered_df[l].isnull().sum())
+                            consecNaN.append(max(filtered_df[l].isnull().astype(int).groupby(filtered_df[l].notnull().astype(int).cumsum()).sum()))
 
                         # Count the number of NaN higher than 24 and the number of consecNaN higher than 8
                         count_numNaN = sum(map(lambda x: x >= limit_numNaN_c, numNaN))
@@ -191,36 +186,20 @@ def mfilterer(File, timeframe, timestep):
                         # Get the first and last index of those days with too many empty (or consecutive) values 
                         # in one variable (NaN in this case)
                         if count_numNaN >= 1 or count_consecNaN >= 1:
-                            indexInit.append(df.index[0])
-                            indexEnd.append(df.index[-1])
+                            # print('here')
+                            indexInit.append(filtered_df.index[0])
+                            indexEnd.append(filtered_df.index[-1])
                         
                         # Clean numNaN and consecNaN
                         numNaN, consecNaN = [], []
+        
+        # Drop rows based on the filtered indices
+        rows_to_drop = []
+        for i, j in zip(indexInit, indexEnd):
+            rows_to_drop.extend(range(i, j + 1))
 
-                        df = pd.read_csv(f'data/{fileName}.csv', delimiter=',')
-
-                        if j == 12 and k == 31:
-                            df = df.loc[df['year'] == (i+1)]
-                            df = df.loc[df['month'] == 1]
-                        
-                        elif j <= 12:
-                            df = df.loc[df['year'] == i]
-                            
-                            if k < 31:
-                                df = df.loc[df['month'] == j]
-                            
-                            elif k == 31:
-                                df = df.loc[df['month'] == (j+1)]
-
-        # Delete those parts of the data frame between the appended indices
-        df = pd.read_csv(f'data/{fileName}.csv', delimiter=',')
-
-        counter = 0
-        lenDay = 96
-        for i,j in zip(indexInit, indexEnd):
-
-            df = df.drop(df.index[int(i-counter*lenDay):int(j-counter*lenDay+1)], inplace=False)
-            counter += 1
+        # Drop the rows using DataFrame.loc with inverse boolean indexing
+        df = df.drop(df.index[rows_to_drop])
 
         # Interpolate the remaining empty values
         df = (df.interpolate(method='polynomial', order=1)).round(2)

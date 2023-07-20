@@ -1,5 +1,8 @@
 # Ingnore the venv
 venv
 
+# Ignore the images
+images
+
 # Ignore the data
 data

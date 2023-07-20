@@ -227,12 +227,12 @@ if __name__ == '__main__':
     
     station = 901
     
-    range_projections = [*range(100, 300, 100)]
-    range_basis = [*range(12, 102, 52)]
-    range_detection_threshold = [*range(0, 45, 15)]
-    range_contamination = [0, 0.1, 0.2]
-    range_neighbors = [*range(0, 30, 10)]
-    range_real_outliers_threshold = [0.1, 0.3, 0.5]
+    range_projections = [*range(200, 300, 100)]
+    range_basis = [*range(48, 64, 16)]
+    range_detection_threshold = [*range(15, 30, 15)]
+    range_contamination = [0, 0.05, 0.1, 0.25, 0.2]
+    range_neighbors = [*range(10, 20, 10)]
+    range_real_outliers_threshold = [0.1, 0.2, 0.3, 0.4, 0.5]
     
     # Get the data for each combination, save it and process it
     results = pd.DataFrame(columns=['projections', 'basis', 'detection_threshold', 'contamination',
@@ -253,7 +253,8 @@ if __name__ == '__main__':
                             t1 = time.time()
                             
                             # Create a class instance
-                            msa_instance = MSA(station=station, projections=200, basis=32, detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.5)
+                            msa_instance = MSA(station=station, projections=projections, basis=basis, detection_threshold=detection_threshold, 
+                                            contamination=contamination, neighbors=neighbors, real_outliers_threshold=real_outliers_threshold)
 
                             # Get the timestamps
                             msa_instance.get_timestamps()

@@ -18,7 +18,7 @@ real_outdec <- function(mts, station) {
     names(average_labels) <- mts$time
 
     # Thresholding operation: values above 0.5 set to 1, rest set to 0
-    average_labels <- ifelse(average_labels >= 0.5, 1, 0)
+    average_labels <- ifelse(average_labels >= 0.1, 1, 0)
 
     # Get the index of the days labeled as 1
     outliers_indexes <- which(average_labels == 1)

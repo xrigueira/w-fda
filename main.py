@@ -213,10 +213,15 @@ class MSA():
         # Create an array of outlier indices (indexkNN)
         outliers_indices = np.array(self.index_outliers)
         
+        print('Indices of the real outleirs', real_outliers_indices)
+        print('Indeces of the outliers detected', outliers_indices)
+        
         real_outliers_indices_set = set(real_outliers_indices.tolist()) # Convert to list and then to set
         outliers_indices_set = set(np.ravel(outliers_indices).tolist()) # Make 1D, convert to list and then to set
         intersection = len(real_outliers_indices_set.intersection(outliers_indices_set))
         union = len(real_outliers_indices_set.union(outliers_indices_set))
+        
+        print('Number of matching outliers', intersection)
         
         return intersection / union if union > 0 else 1.0
 
@@ -226,7 +231,7 @@ if __name__ == '__main__':
     station = 901
     
     # Create a class instance
-    msa_instance = MSA(station=station, projections=200, basis=32, detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.5)
+    msa_instance = MSA(station=station, projections=200, basis=48, detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.1)
 
     # Get the timestamps
     msa_instance.get_timestamps()
@@ -242,5 +247,6 @@ if __name__ == '__main__':
     
     # Calculate accuracy
     similarity = msa_instance.metric()
+    print(similarity)
 
 

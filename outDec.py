@@ -132,7 +132,7 @@ def outDec(magnitude, shape, amplitude, detection_threshold):
             outliers_in_data = True
         else:
             outliers_in_data = False
-    
+    outliers_in_data = True
     return outliers_in_data
 
 def outDec2_testing(varName, clean):
