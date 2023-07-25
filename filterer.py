@@ -202,7 +202,7 @@ def mfilterer(File, timeframe, timestep):
         df = df.drop(df.index[rows_to_drop])
 
         # Interpolate the remaining empty values
-        df = (df.interpolate(method='polynomial', order=1)).round(2)
+        df = (df.interpolate(method='polynomial', order=2)).round(2)
 
         # Save the data frame
         cols = list(df.columns.values.tolist())

@@ -68,4 +68,4 @@ get_msa <- function(projections, basis) {
 }
 
 # This line is just to run msaCalc.R outside the Python environment
-# msa <- get_msa(projections = 200, basis = 32)
+# msa <- get_msa(projections = 200, basis = 48)

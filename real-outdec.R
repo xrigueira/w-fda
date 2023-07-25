@@ -15,7 +15,7 @@ real_outdec <- function(mts, station) {
     average_labels <- average_label$label
 
     # Assign names to the numeric vector in the desired format
-    names(average_labels) <- mts$time
+    names(average_labels) <- as.character(average_label$date)
 
     # Thresholding operation: values above 0.5 set to 1, rest set to 0
     average_labels <- ifelse(average_labels >= 0.1, 1, 0)

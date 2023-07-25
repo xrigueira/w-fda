@@ -2,6 +2,7 @@
 
 import csv
 import numpy as np
+import pandas as pd
 import rpy2.robjects as robjects
 import plotly.graph_objects as go
 
@@ -10,8 +11,9 @@ from datetime import datetime
 
 class MSA():
     
-    def __init__(self, station, projections, basis, detection_threshold, contamination, neighbors, real_outliers_threshold) -> None:
+    def __init__(self, search, station, projections, basis, detection_threshold, contamination, neighbors, real_outliers_threshold) -> None:
         self.station = station
+        self.search = search
         self.projections = projections
         self.basis = basis
         self.detection_threshold = detection_threshold
@@ -55,6 +57,69 @@ class MSA():
         self.timestamps = timestamps
         
         return timestamps
+    
+    def rf(self):
+        
+        # Read the data
+        data = pd.read_csv(f'data/labeled_{self.station}_shu.csv', sep=',', encoding='utf-8')
+
+        # Convert variable columns to np.ndarray
+        X = data.iloc[:, 1:5].values
+        y = data.iloc[:, -1].values
+
+        # Split the data into test and train sets
+        from sklearn.model_selection import train_test_split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.2, random_state=0)
+        # unique, counts = np.unique(y[:481305], return_counts=True)
+        # print(dict(zip(unique, counts)))
+        
+        if self.search == True:
+    
+            # Define the parameters to iterate over
+            param_dist = {'n_estimators': [50, 75, 100, 125, 150, 175], 'max_depth': [1, 2, 3, 4, 5, 10, 15, 20, 50, None],
+                        'min_samples_split': [2, 4, 6, 8, 10], 'min_samples_leaf': [1, 2, 3, 4, 5]}
+            
+            from sklearn.model_selection import RandomizedSearchCV
+            from sklearn.ensemble import RandomForestClassifier
+            rand_search = RandomizedSearchCV(RandomForestClassifier(random_state=0), param_distributions = param_dist, n_iter=5, cv=5)
+            
+            rand_search.fit(X_train, y_train)
+            
+            # Get best params
+            best_params = rand_search.best_params_
+            best_model = rand_search.best_estimator_
+            print('Best params', best_params, '| Best model', best_model)
+            
+            # Make predictions on the testing data
+            y_hat = best_model.predict(X_test)
+            
+        elif self.search == False:
+            
+            # Call the model
+            from sklearn.ensemble import RandomForestClassifier
+            model = RandomForestClassifier(random_state=0)
+
+            # Fit the model to the training data
+            model.fit(X_train, y_train)
+
+            # Make predictions on the testing data
+            y_hat = model.predict(X_test)
+        
+        # Get the accuracy of the model
+        from sklearn.metrics import accuracy_score, confusion_matrix
+        accuracy = accuracy_score(y_test, y_hat)
+        print('Accuracy', accuracy)
+
+        # Get the number of rows labeled as anomalies in y_test
+        print('Number of anomalies', len([i for i in y_test if i==1]))
+
+        # Display the confusion matrix
+        if self.search == True:
+            confusion_matrix = confusion_matrix(y_test, best_model.predict(X_test))
+        elif self.search == False:
+            confusion_matrix = confusion_matrix(y_test, model.predict(X_test))
+
+        print(confusion_matrix)
         
     def call_msa(self):
         """Write documentation.
@@ -235,21 +300,24 @@ if __name__ == '__main__':
     station = 901
     
     # Create a class instance
-    msa_instance = MSA(station=station, projections=200, basis=48, detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.1)
+    msa_instance = MSA(station=station, search=False, projections=200, basis=48, detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.1)
 
-    # Get the timestamps
+    # # Get the timestamps
     msa_instance.get_timestamps()
     
-    # Calculate magnitude, shape, and amplitude
+    # Calculate Random Forest scores
+    # msa_instance.rf()
+    
+    # # Calculate magnitude, shape, and amplitude
     msa_instance.call_msa()
     
-    # Detect outliers if any
+    # # Detect outliers if any
     msa_instance.outlier_detector()
     
-    # Plot the results
+    # # Plot the results
     msa_instance.plots()
     
-    # Calculate accuracy
+    # # Calculate accuracy
     jaccard_index, accuracy = msa_instance.metric()
     print('Jaccard similary index:', jaccard_index)
     print('Accuracy:', accuracy)
