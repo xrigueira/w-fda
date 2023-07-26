@@ -1,24 +1,19 @@
+# Read npt files and put in a single df
+
+import numpy as np
 import pandas as pd
-from random import shuffle
+msa_pro = np.load('msa_pro.npy') #2D with 3 columns
+msa_shu = np.load('msa_shu.npy') #2D with 3 column
+timestamps_pro = np.load('timestamps_pro.npy') # 1D
+timestamps_shu = np.load('timestamps_shu.npy') # 1D
 
-# This file shuffles the database by day correctly
+# Convert 1D timestamp arrays to 2D by stacking them vertically
+timestamps_pro = timestamps_pro.reshape(-1, 1)
+timestamps_shu = timestamps_shu.reshape(-1, 1)
 
-# Read the data
-station = 901
-data = pd.read_csv(f'data/labeled_{station}_pro.csv', sep=',', encoding='utf-8')
+# Horizontally stack the arrays
+stacked_arrays = np.hstack((msa_pro, timestamps_pro, msa_shu, timestamps_shu))
 
-# Group the data by day
-data['date'] = pd.to_datetime(data['date'])
-grouped_by_day = data.groupby(data['date'].dt.date)
+df = pd.DataFrame(stacked_arrays)
 
-# Shuffle order of the groups
-group_keys = list(grouped_by_day.groups.keys())
-shuffle(group_keys)
-
-# Combine the suffle groups back into a single data frame
-shuffled_df = pd.concat([grouped_by_day.get_group(key) for key in group_keys])
-
-# Reset the index of the suffled data frame
-shuffled_df.reset_index(drop=True, inplace=True)
-
-shuffled_df.to_csv(f'data/labeled_{station}_shu.csv', sep=',', index=False)
+df.to_csv('combined.csv', sep=',', encoding='utf-8', index=False)

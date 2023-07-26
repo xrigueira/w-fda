@@ -23,6 +23,7 @@ get_magnitude_shape <- function(mts, projections){
 
     rownames(magnitude_shape) <- mts$time
     colnames(magnitude_shape) <- c("magnitude", "shape")
+    print(magnitude_shape)
 
     return(magnitude_shape)
 

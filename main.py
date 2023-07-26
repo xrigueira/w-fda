@@ -54,6 +54,7 @@ class MSA():
         # Convert unique_days to a numpy array and change datetime format
         unique_days = [datetime_obj.strftime('%d-%m-%Y') for datetime_obj in unique_days]
         timestamps = np.array(unique_days)
+        np.save('timestamps.npy', timestamps, allow_pickle=False, fix_imports=False)
         self.timestamps = timestamps
         
         return timestamps
@@ -230,7 +231,7 @@ class MSA():
             # Plot comparison to labeled outliers
             from real_outdec import real_outdec
 
-            real_outliers_indices = real_outdec(station=901, real_outlier_threshold=self.real_outliers_threshold)
+            real_outliers_indices, real_outliers_dates = real_outdec(station=901, real_outlier_threshold=self.real_outliers_threshold)
 
             # Create an array of outlier indices (indexkNN)
             outliers_indices = np.array(self.index_outliers)
@@ -273,13 +274,13 @@ class MSA():
         
         from real_outdec import real_outdec
 
-        real_outliers_indices = real_outdec(station=901, real_outlier_threshold=self.real_outliers_threshold)
-
+        real_outliers_indices, real_outliers_dates = real_outdec(station=901, real_outlier_threshold=self.real_outliers_threshold)
+        print(real_outliers_dates)
         # Create an array of outlier indices (indexkNN)
         outliers_indices = np.array(self.index_outliers)
         
         print('Indices of the real outleirs', real_outliers_indices)
-        print('Indeces of the outliers detected', outliers_indices)
+        print('Indices of the outliers detected', outliers_indices)
         
         real_outliers_indices_set = set(real_outliers_indices.tolist()) # Convert to list and then to set
         outliers_indices_set = set(np.ravel(outliers_indices).tolist()) # Make 1D, convert to list and then to set
@@ -308,18 +309,18 @@ if __name__ == '__main__':
     # Calculate Random Forest scores
     # msa_instance.rf()
     
-    # # Calculate magnitude, shape, and amplitude
+    # Calculate magnitude, shape, and amplitude
     msa_instance.call_msa()
     
-    # # Detect outliers if any
+    # Detect outliers if any
     msa_instance.outlier_detector()
     
-    # # Plot the results
+    # Plot the results
     msa_instance.plots()
     
-    # # Calculate accuracy
+    # Calculate accuracy
     jaccard_index, accuracy = msa_instance.metric()
-    print('Jaccard similary index:', jaccard_index)
+    print('Jaccard similarity index:', jaccard_index)
     print('Accuracy:', accuracy)
 
 

@@ -53,7 +53,7 @@ get_msa <- function(projections, basis) {
     print("[INFO] msa obtained")
 
     # Extract the real outliers to check the results
-    real_outliers <- real_outdec(mts, station)
+    real_outliers <- real_outdec(station)
     print("[INFO] ground truth outliers extracted")
     print(real_outliers)
 
