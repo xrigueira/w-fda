@@ -54,7 +54,6 @@ class MSA():
         # Convert unique_days to a numpy array and change datetime format
         unique_days = [datetime_obj.strftime('%d-%m-%Y') for datetime_obj in unique_days]
         timestamps = np.array(unique_days)
-        np.save('timestamps.npy', timestamps, allow_pickle=False, fix_imports=False)
         self.timestamps = timestamps
         
         return timestamps
