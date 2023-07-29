@@ -4,7 +4,7 @@ Station;Start_date;End_date;Variable
 901;05-04-2006 00:00:00;08-04-2006 11:30:00;ammonium
 901;21-05-2006 00:00:00;25-05-2006 00:00:00;ammonium, conductivity
 901;15-09-2006 00:00:00;18-09-2006 00:00:00;ammonium, disolved_oxygen
-901;21-09-2006 20:00:00;22-01-2006 11:00:00;ammonium
+901;21-09-2006 20:00:00;22-09-2006 11:00:00;ammonium
 901;16-10-2006 18:00:00;17-10-2006 11:00:00;ammonium
 901;25-10-2006 11:00:00;26-10-2006 05:00:00;ammonium, conductivity
 901;05-11-2006 16:00:00;06-11-2006 05:00:00;ammonium, conductivity
@@ -36,7 +36,6 @@ Station;Start_date;End_date;Variable
 901;14-05-2012 12:00:00;14-05-2012 18:00:00;conductivity, pH, dissolved_oxygen, ammonium, turbidity
 901;25-09-2012 06:00:00;28-09-2012 00:00:00;conductivity, dissolved_oxygen, ammonium
 901;28-11-2012 22:00:00;29-11-2012 09:00:00;dissolved_oxygen, ammonium, turbidity, water_level
-901;05-03-2013 02:00:00;11-03-2013 00:00:00;turbidity, water_level
 901;05-03-2013 16:00:00;05-03-2013 20:00:00;ammonium
 901;09-03-2013 07:00:00;09-03-2013 12:00:00;ammonium
 901;27-11-2014 20:00:00;28-03-2014 12:00:00;conductivity, dissolved_oxygen, turbidity
@@ -45,7 +44,6 @@ Station;Start_date;End_date;Variable
 901;23-11-2016 20:00:00;24-11-2016 20:45:00;conductivity, ammonium, water_flow, pH, dissolved_oxygen
 901;05-05-2017 18:00:00;06-05-2017 06:00:00;conductivity, dissolved_oxygen, ammonium
 901;07-05-2017 12:00:00;08-05-2017 06:00:00;conductivity, dissolved_oxygen, ammonium
-901;14-10-2017 18:00:00;15-10-2017 18:00:00;water_level
 901;15-10-2017 18:00:00;16-10-2017 12:00:00;conductivity, dissolved_oxygen
 901;26-11-2020 11:00:00;27-11-2020 11:00:00;conductivity, dissolved_oxygen, pH, water_flow
 901;23-08-2022 18:30:00;23-08-2022 20:30:00;ammonium

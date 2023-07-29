@@ -57,6 +57,33 @@ class MSA():
         
         shuffled_df.to_csv(f'data/labeled_{station}_shu.csv', sep=',', index=False)
     
+    def windows(self, array, data_type):
+        """This method takes an array and generates overlapping windows.
+        ----------
+        Arguments:
+        array (np.array): the array to process. In this case is X_test already...
+        group_size (int): the length of each window.
+        step_size (int): the step used to create the windows.
+        data_type (string): whether it is data or labels.
+
+        Returns:
+        groups (np.array): windowed array."""
+
+        groups = []
+        for i in range(0, array.shape[0] - self.group_size + 1, self.step_size):
+            group = array[i:i + self.group_size]
+            if data_type == 'X':
+                groups.append(group)
+            else:
+                label = sum(group) / len(group)
+                if label >= 0.5:
+                    label = 1
+                else:
+                    label = 0
+                groups.append(label)
+        
+        return np.array(groups)
+    
     def get_timestamps(self):
         
         # Open the CSV file and read the data

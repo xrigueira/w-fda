@@ -19,21 +19,21 @@ timeStep = '15 min'
 
 if __name__ == '__main__':
 
-    # for varName in varNames:
+    for varName in varNames:
 
-    #     # Fill in the gaps in the time series
-    #     checkGaps(File=f'{varName}.txt', timestep=timeStep, varname=varName)
-    #     print('[INFO] checkGaps() DONE')
+        # Fill in the gaps in the time series
+        checkGaps(File=f'{varName}.txt', timestep=timeStep, varname=varName)
+        print('[INFO] checkGaps() DONE')
 
-    #     # Normalize the data. See normalizer.py for details
-    #     normalizer(File=f'{varName}_full.csv', timeframe=timeFrame, timestep=timeStep, varname=varName)
-    #     print('[INFO] normalizer() DONE')
+        # Normalize the data. See normalizer.py for details
+        normalizer(File=f'{varName}_full.csv', timeframe=timeFrame, timestep=timeStep, varname=varName)
+        print('[INFO] normalizer() DONE')
     
-    # for station in stations:
+    for station in stations:
     
-    #     # Join the normalized databases
-    #     joiner(station=station)
-    #     print('[INFO] joiner() DONE')
+        # Join the normalized databases
+        joiner(station=station)
+        print('[INFO] joiner() DONE')
     
     # RUN labeler.py MANUALLY. <- Fix this whenever I have some time
     
