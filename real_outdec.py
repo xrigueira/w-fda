@@ -5,7 +5,7 @@ import numpy as np
 def real_outdec(station, real_outlier_threshold):
     
     # Read the csv file
-    data = pd.read_csv(f"data/labeled_{station}_pro.csv", sep=',', encoding='utf-8')
+    data = pd.read_csv(f"data/labeled_{station}_pro_msa.csv", sep=',', encoding='utf-8')
 
     # Convert the 'date' column to datetime type
     data['date'] = pd.to_datetime(data['date'])

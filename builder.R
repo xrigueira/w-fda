@@ -22,7 +22,7 @@ time_getter <- function() {
 builder <- function(time_frame, span, time_step, station, variables) {
 
     # Read the csv file
-    df <- read.csv(paste("data/labeled_", station, "_pro.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
+    df <- read.csv(paste("data/labeled_", station, "_pro_msa.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
 
     if (time_step == "15 min") {
         # Set number of row for 15 min data
@@ -56,12 +56,12 @@ builder <- function(time_frame, span, time_step, station, variables) {
             end_index <- i * nrow_days
 
             mat <- data.matrix(df[start_index:end_index, variables])
-            
+
             mts$data[[counter]] <- mat
             mts$time[[counter]] <- c(df$day[start_index], df$month[start_index], df$year[start_index])
 
             counter <- counter + 1
-        
+
         }
 
     return(mts)

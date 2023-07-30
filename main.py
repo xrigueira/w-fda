@@ -22,6 +22,7 @@ class MSA():
         self.neighbors = neighbors
         self.real_outliers_threshold = real_outliers_threshold
         self.timestamps = None
+        self.rf_weights = None
         self.msa = None
         self.magnitude = None
         self.shape = None
@@ -30,64 +31,10 @@ class MSA():
         self.outliers_in_data = None
         self.index_outliers = None
     
-    def shuffler(self):
-        """his file shuffles the database by day.
-        ----------
-        Arguments:
-        self.
-        
-        Return:
-        None."""
-        
-        data = pd.read_csv(f'data/labeled_{self.station}_pro.csv', sep=',', encoding='utf-8')
-        
-        # Group the data by day
-        data['date'] = pd.to_datetime(data['date'])
-        grouped_by_day = data.groupby(data['date'].dt.date)
-
-        # Shuffle order of the groups
-        group_keys = list(grouped_by_day.groups.keys())
-        shuffle(group_keys)
-        
-        # Combine the suffle groups back into a single data frame
-        shuffled_df = pd.concat([grouped_by_day.get_group(key) for key in group_keys])
-
-        # Reset the index of the suffled data frame
-        shuffled_df.reset_index(drop=True, inplace=True)
-        
-        shuffled_df.to_csv(f'data/labeled_{station}_shu.csv', sep=',', index=False)
-    
-    def windows(self, array, data_type):
-        """This method takes an array and generates overlapping windows.
-        ----------
-        Arguments:
-        array (np.array): the array to process. In this case is X_test already...
-        group_size (int): the length of each window.
-        step_size (int): the step used to create the windows.
-        data_type (string): whether it is data or labels.
-
-        Returns:
-        groups (np.array): windowed array."""
-
-        groups = []
-        for i in range(0, array.shape[0] - self.group_size + 1, self.step_size):
-            group = array[i:i + self.group_size]
-            if data_type == 'X':
-                groups.append(group)
-            else:
-                label = sum(group) / len(group)
-                if label >= 0.1:
-                    label = 1
-                else:
-                    label = 0
-                groups.append(label)
-        
-        return np.array(groups)
-    
     def get_timestamps(self):
         
         # Open the CSV file and read the data
-        with open(f'data/labeled_{self.station}_pro.csv', 'r') as file:
+        with open(f'data/labeled_{self.station}_pro_msa.csv', 'r') as file:
             csv_reader = csv.DictReader(file)
             
             # Initialize a list to store unique datetime objects
@@ -110,9 +57,7 @@ class MSA():
         unique_days = [datetime_obj.strftime('%d-%m-%Y') for datetime_obj in unique_days]
         timestamps = np.array(unique_days)
         self.timestamps = timestamps
-        
-        return timestamps
-    
+
     def rf(self):
         
         # Read the data
@@ -121,58 +66,82 @@ class MSA():
         # Convert variable columns to np.ndarray
         X = data.iloc[:, 1:7].values
         y = data.iloc[:, -1].values
-
-        # Split the data into test and train sets
-        # from sklearn.model_selection import train_test_split
-        # X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.2, random_state=1)
         
-        # if self.search == True:
-    
-        #     # Define the parameters to iterate over
-        #     param_dist = {'n_estimators': [50, 75, 100, 125, 150, 175], 'max_depth': [1, 2, 3, 4, 5, 10, 15, 20, 50, None],
-        #                 'min_samples_split': [2, 4, 6, 8, 10], 'min_samples_leaf': [1, 2, 3, 4, 5]}
-            
-        #     from sklearn.model_selection import RandomizedSearchCV
-        #     from sklearn.ensemble import RandomForestClassifier
-        #     rand_search = RandomizedSearchCV(RandomForestClassifier(random_state=0), param_distributions = param_dist, n_iter=5, cv=5)
-            
-        #     rand_search.fit(X_train, y_train)
-            
-        #     # Get best params
-        #     best_params = rand_search.best_params_
-        #     best_model = rand_search.best_estimator_
-        #     print('Best params', best_params, '| Best model', best_model)
-            
-        #     # Make predictions on the testing data
-        #     y_hat = best_model.predict(X_test)
-            
-        # elif self.search == False:
-            
-        #     # Call the model
-        #     from sklearn.ensemble import RandomForestClassifier
-        #     model = RandomForestClassifier(random_state=0)
+        # Get the number or rows in the database
+        num_rows = X.shape[0]
 
-        #     # Fit the model to the training data
-        #     model.fit(X_train, y_train)
+        # Save the original order
+        original_indices = np.arange(num_rows)
 
-        #     # Make predictions on the testing data
-        #     y_hat = model.predict(X_test)
+        # Generate random indices to shuffle the data
+        np.random.seed(0)
+        random_indices = np.random.permutation(num_rows)
+
+        # Use the random indices to shuffle the data
+        shuffled_X = X[random_indices]
+        shuffled_y = y[random_indices]
+
+        # Split the data into training and test sets
+        X_train, X_test, y_train, y_test = shuffled_X[:378240], shuffled_X[378240:], shuffled_y[:378240], shuffled_y[378240:]
         
-        # # Get the accuracy of the model
-        # from sklearn.metrics import accuracy_score, confusion_matrix
-        # accuracy = accuracy_score(y_test, y_hat)
-        # print('Accuracy', accuracy)
+        if self.search == True:
+            
+            # Define the parameters to iterate over
+            param_dist = {'n_estimators': [50, 75, 100, 125, 150, 175], 'max_depth': [1, 2, 3, 4, 5, 10, 15, 20, 50, None],
+                        'min_samples_split': [2, 4, 6, 8, 10], 'min_samples_leaf': [1, 2, 3, 4, 5]}
+            
+            from sklearn.model_selection import RandomizedSearchCV
+            from sklearn.ensemble import RandomForestClassifier
+            rand_search = RandomizedSearchCV(RandomForestClassifier(random_state=0), param_distributions = param_dist, n_iter=5, cv=5)
+            
+            rand_search.fit(X_train, y_train)
+            
+            # Get best params
+            best_params = rand_search.best_params_
+            best_model = rand_search.best_estimator_
+            print('Best params', best_params, '| Best model', best_model)
+            
+            # Make predictions on the testing data
+            y_hat = best_model.predict(shuffled_X)
+            
+        elif self.search == False:
+            
+            # Call the model
+            from sklearn.ensemble import RandomForestClassifier
+            model = RandomForestClassifier(random_state=0)
 
-        # # Get the number of rows labeled as anomalies in y_test
-        # print('Number of anomalies', len([i for i in y_test if i==1]))
+            # Fit the model to the training data
+            model.fit(X_train, y_train)
 
-        # # Display the confusion matrix
-        # if self.search == True:
-        #     confusion_matrix = confusion_matrix(y_test, best_model.predict(X_test))
-        # elif self.search == False:
-        #     confusion_matrix = confusion_matrix(y_test, model.predict(X_test))
+            # Make predictions on the testing data
+            y_hat = model.predict(shuffled_X)
+        
+        # Get the accuracy of the model
+        from sklearn.metrics import accuracy_score, confusion_matrix
+        accuracy = accuracy_score(shuffled_y, y_hat)
+        print('Accuracy', accuracy)
 
-        # print(confusion_matrix)
+        # Get the number of rows labeled as anomalies in y_test
+        print('Number of anomalies', len([i for i in shuffled_y if i==1]))
+
+        # Display the confusion matrix
+        if self.search == True:
+            confusion_matrix = confusion_matrix(shuffled_y, best_model.predict(shuffled_X))
+        elif self.search == False:
+            confusion_matrix = confusion_matrix(shuffled_y, model.predict(shuffled_X))
+
+        print(confusion_matrix)
+        
+        # Use the original indices to restore the predictions to the original order of the labels
+        restored_y_hat = y[original_indices]
+
+        # Extract the average predicted label per day
+        grouped_y_hat = restored_y_hat[378240:].reshape(-1, 96)
+
+        # Get the average if each group
+        rf_weights = np.mean(grouped_y_hat, axis=1)
+        # np.save('rf_weights.npy', rf_weights, allow_pickle=False, fix_imports=False) # Remove when the program is finixed
+        self.rf_weights = rf_weights
         
     def call_msa(self):
         """Write documentation.
@@ -197,7 +166,11 @@ class MSA():
             # Convert and save the result to a numpy.ndarray
             msa = np.array(msa)
             self.msa = msa # Store the result in the instance variable
-            # np.save('msa.npy', msa, allow_pickle=False, fix_imports=False) # Remove then the program is finished
+            np.save('msa.npy', msa, allow_pickle=False, fix_imports=False) # Remove then the program is finished
+            
+            # Apply the weights obtained with Random Forest
+            # self.rf_weights = np.load('rf_weights.npy')
+            # self.msa = msa * (1 + self.rf_weights[:, np.newaxis])
 
     def outlier_detector(self):
         
@@ -356,23 +329,23 @@ if __name__ == '__main__':
     msa_instance = MSA(station=station, search=False, projections=200, basis=48, detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.1)
 
     # # Get the timestamps
-    # msa_instance.get_timestamps()
+    msa_instance.get_timestamps()
     
     # Calculate Random Forest scores
-    msa_instance.rf()
+    # msa_instance.rf()
     
     # # Calculate magnitude, shape, and amplitude
-    # msa_instance.call_msa()
+    msa_instance.call_msa()
     
     # # Detect outliers if any
-    # msa_instance.outlier_detector()
+    msa_instance.outlier_detector()
     
     # # Plot the results
-    # msa_instance.plots()
+    msa_instance.plots()
     
-    # # Calculate accuracy
-    # jaccard_index, accuracy = msa_instance.metric()
-    # print('Jaccard similarity index:', jaccard_index)
-    # print('Accuracy:', accuracy)
+    # Calculate accuracy
+    jaccard_index, accuracy = msa_instance.metric()
+    print('Jaccard similarity index:', jaccard_index)
+    print('Accuracy:', accuracy)
 
 

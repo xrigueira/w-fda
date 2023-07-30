@@ -3,7 +3,7 @@
 real_outdec <- function(station) {
 
     # Read the csv file
-    data <- read.csv(paste("data/labeled_", station, "_pro.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
+    data <- read.csv(paste("data/labeled_", station, "_pro_msa.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
 
     # Convert the 'date' column to a proper date format
     data$date <- as.Date(data$date)
