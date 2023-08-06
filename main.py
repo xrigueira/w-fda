@@ -170,7 +170,7 @@ class MSA():
             
             # Apply the weights obtained with Random Forest
             # self.rf_weights = np.load('rf_weights.npy')
-            # self.msa = msa * (1 + self.rf_weights[:, np.newaxis])
+            self.msa = msa * (1 + self.rf_weights[:, np.newaxis])
 
     def outlier_detector(self):
         
@@ -332,7 +332,7 @@ if __name__ == '__main__':
     msa_instance.get_timestamps()
     
     # Calculate Random Forest scores
-    # msa_instance.rf()
+    msa_instance.rf()
     
     # # Calculate magnitude, shape, and amplitude
     msa_instance.call_msa()

@@ -84,4 +84,5 @@ print(results$rss)
 print(results$outliers)
 as.vector(results$outliers)
 
-# Continue studying the data used in this example
+# Continue studying the data types used in this example
+# and implement it with my data
