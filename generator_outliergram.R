@@ -7,68 +7,108 @@
 
 library(roahd)
 
-set.seed(1)
+data_generator <- function(N, L, P) {
 
-data_generator <- function() {
+    # Define the seed
+    set.seed(1)
 
-    # Define its parameters
-    N <- 100 # Number of distintc functional observations (number of days in my case: 1092)
-    L <- 3 # Number of components of the data (number of variables)
-    P <- 1e2 # Length of the series
+    # Define the configuration of the horizontal axis
     time_grid <- seq(0, 1, length.out = P)
+
     # Define the centerline for each variable
-    centerline = matrix(c(sin(2 * pi * time_grid), sqrt(time_grid), 10 * (time_grid - 0.5) * time_grid), nrow = 3, byrow = TRUE)
+    centerline <- matrix(c(sin(2 * pi * time_grid),
+                            sqrt(time_grid),
+                            10 * (time_grid - 0.5) * time_grid,
+                            cos(2 * pi * time_grid),
+                            time_grid**2,
+                            2 * time_grid + 1),
+                            nrow = 6, byrow = TRUE)
+
     # Define the covariance for each variable
-    Cov1 <- exp_cov_function(time_grid, alpha = 0.2, beta = 0.3)
-    Cov2 <- exp_cov_function(time_grid, alpha = 0.1, beta = 0.5)
-    Cov3 <- exp_cov_function(time_grid, alpha = 0.4, beta = 0.3)
-    # Define the correlation for each variable
+    Cov1 <- exp_cov_function(time_grid, alpha = 0.2, beta = 0.2)
+    Cov2 <- exp_cov_function(time_grid, alpha = 0.2, beta = 0.2)
+    Cov3 <- exp_cov_function(time_grid, alpha = 0.2, beta = 0.2)
+    Cov4 <- exp_cov_function(time_grid, alpha = 0.2, beta = 0.2)
+    Cov5 <- exp_cov_function(time_grid, alpha = 0.2, beta = 0.2)
+    Cov6 <- exp_cov_function(time_grid, alpha = 0.2, beta = 0.2)
+
+    # Define the correlation for each variable (3 for 3 var, 6 for 4 var, and 15 for 6 var)
     corr1 <- 0.5
     corr2 <- 0.5
     corr3 <- 0.5
+    corr4 <- 0.5
+    corr5 <- 0.5
+    corr6 <- 0.5
+    corr7 <- 0.5
+    corr8 <- 0.5
+    corr9 <- 0.5
+    corr10 <- 0.5
+    corr11 <- 0.5
+    corr12 <- 0.5
+    corr13 <- 0.5
+    corr14 <- 0.5
+    corr15 <- 0.5
 
-    mdata <- generate_gauss_mfdata(N = N, L = L, centerline = centerline, correlations = c(corr1, corr2, corr3), listCov = list(Cov1, Cov2, Cov3))
+    mdata <- generate_gauss_mfdata(N = N, L = L, centerline = centerline,
+                                    correlations = c(corr1, corr2, corr3, corr4, corr5, corr6, corr7, corr8, corr9, corr10, corr11, corr12, corr13, corr14, corr15),
+                                    listCov = list(Cov1, Cov2, Cov3, Cov4, Cov5, Cov6))
 
-    mfD <- mfData(time_grid, mdata) # convert to S3 functional data object
+    return(mdata)
+}
+
+data_saver <- function(N, L, P, data) {
+
+    # Create an empty data frame
+    df <- data.frame(matrix(nrow = N * P, ncol = L))
+
+    # Iterate over each variable (matrix) in the list
+    for (i in seq_along(data)) {
+
+        values <- c()  # Initialize combined_values for each matrix
+
+        # Iterate over each row in the matrix
+        for (j in 1:nrow(data[[i]])) {
+
+            values <- c(values, data[[i]][j, ])
+
+        }
+
+        # Add the concatenated values as a new column to the data frame
+        df[[i]] <- values
+    }
+
+    # Save the generated data
+    write.csv(df, file = "data.csv", row.names = FALSE)
+
+}
+
+my_outliergram <- function(data) {
+
+    # Define the configuration of the horizontal axis
+    time_grid <- seq(0, 1, length.out = P)
+
+    mfD <- mfData(time_grid, data) # convert to S3 functional data object
 
     plot(mfD)
 
-    # Univariate case
-    # N <- 192
-    # centerline <- sin(2 * pi * seq(0, 96, length.out = 96))
-    # alpha <- 0.1
-    # beta <- 0.1
-    # Cov <- exp_cov_function(seq(0, 96, length.out = 96), alpha = alpha, beta = beta)
-    
-    # udata <- generate_gauss_fdata(N = N, centerline = centerline, Cov = Cov)
+    out <- multivariate_outliergram(mfD, Fvalue = 2, shift = TRUE, display = TRUE)
 
-    # grid <- seq(0, 96, length.out = 96)
-    # ufD <- fData(grid, data) # convert to S3 functional data object
+    return(out)
 
-    # plot(ufD)
-
-    return(mfD)
 }
 
+# Define fadalara
+# 1. Load the data in the format it wants
+# 2. outlier detection with fadalara
 
-data <- data_generator()
+# Define its parameters
+N <- 5      # Number of distintc functional observations (number of days in my case: 1092)
+L <- 6      # Number of components of the data (number of variables)
+P <- 16     # Length of the series
 
-# Outliergram
+data <- data_generator(N, L, P)
 
-dev.new()
+data_saver(N, L, P, data)
 
-out <- multivariate_outliergram(data, Fvalue = 2, shift = TRUE, display = TRUE)
-
-N <- 100
-col_non_outlying <- scales::hue_pal(h = c( 180, 270 ), l = 60 )(N - length(out$ID_outliers))
-col_non_outlying <- set_alpha(col_non_outlying, 0.5)
-col_outlying <- scales::hue_pal(h <- c( - 90, 180 ), c = 150 )(length(out$ID_outliers))
-colors <- rep('black', N)
-colors[out$ID_outliers] <- col_outlying
-colors[colors == 'black'] <- col_non_outlying
-lwd <- rep(1, N)
-lwd[out$ID_outliers] <- 2
-
-dev.new()
-
-plot(data, col=colors, lwd=lwd)
+outliers <- my_outliergram(data)
+print(outliers$ID_outliers)

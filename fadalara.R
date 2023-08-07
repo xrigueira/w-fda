@@ -10,7 +10,7 @@ library(adamethods)
 ## Not run:
 library(fda)
 ?growth
-str(growth)
+# str(growth)
 
 hgtm <- growth$hgtm # Height males (39 males in total)
 hgtf <- growth$hgtf[, 1:39] # Height females (54 females in total)
@@ -22,7 +22,7 @@ data.array[, , 1] <- as.matrix(hgtm)
 data.array[, , 2] <- as.matrix(hgtf)
 rownames(data.array) <- 1:nrow(hgtm)
 colnames(data.array) <- colnames(hgtm)
-str(data.array)
+# str(data.array)
 
 # Create basis
 nbasis <- 10
@@ -76,13 +76,13 @@ results <- fadalara(data = data_alg, N = N, m = m, numArchoid = k, numRep = numR
 
 stopCluster(cl)
 
-results_copy <- results
-results <- results[which.min(unlist(sapply(results, function(x) x[2])))][[1]]
-str(results)
-print(results$cases)
-print(results$rss)
-print(results$outliers)
-as.vector(results$outliers)
+# results_copy <- results
+# results <- results[which.min(unlist(sapply(results, function(x) x[2])))][[1]]
+# str(results)
+# print(results$cases)
+# print(results$rss)
+# print(results$outliers)
+# as.vector(results$outliers)
 
 # Continue studying the data types used in this example
 # and implement it with my data
