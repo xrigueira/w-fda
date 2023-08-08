@@ -31,9 +31,9 @@ get_msa <- function(projections, basis) {
     variables <- c(paste("ammonium_", station, sep = ""),
                     paste("conductivity_", station, sep = ""),
                     paste("dissolved_oxygen_", station, sep = ""),
-                    paste("pH_", station, sep = "")
-                    # paste("turbidity_", station, sep = "")
-                    # paste("water_temperature_", station, sep = "")
+                    paste("pH_", station, sep = ""),
+                    paste("turbidity_", station, sep = ""),
+                    paste("water_temperature_", station, sep = "")
                 )
 
     # Get multivariate time series object (mts)

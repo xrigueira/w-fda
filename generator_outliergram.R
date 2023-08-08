@@ -5,7 +5,11 @@
 # Contains uselful description of the methods for the paper https://journal.r-project.org/archive/2019/RJ-2019-032/RJ-2019-032.pdf
 # Page 73 may have the key to add outliers
 
+library(fda)
 library(roahd)
+library(adamethods)
+
+source("builder.R")
 
 data_generator <- function(N, L, P) {
 
@@ -80,6 +84,8 @@ data_saver <- function(N, L, P, data) {
     # Save the generated data
     write.csv(df, file = "data.csv", row.names = FALSE)
 
+    return(df)
+
 }
 
 my_outliergram <- function(data) {
@@ -97,9 +103,38 @@ my_outliergram <- function(data) {
 
 }
 
-# Define fadalara
-# 1. Load the data in the format it wants
-# 2. outlier detection with fadalara
+my_fadalara <- function(saved_df) {
+
+    # Start from saved_df and create basis (line 27 fadalara)
+
+    n <- nrow(saved_df)
+
+    # Number of archetypoids:
+    k <- 3
+    numRep <- 20
+    huge <- 200
+
+    # Size of the random sample of observations:
+    m <- 15
+
+    # Number of samples:
+    N_samples <- floor(1 + (n - m) / (m - k))
+    prob <- 0.75
+
+    # Read the generated data
+    library(doParallel)
+    no_cores <- detectCores() - 1
+    cluster <- makeCluster(no_cores)
+    registerDoParallel(cl)
+    clusterSetRNGStream(cl, iseed = 1)
+
+    results <- fadalara(data = saved_df, N = N_samples, m = m, numArchoid = k, numRep = numRep,
+                        huge = huge, prob = prob, type_alg = "fada_rob", compare = FALSE,
+                        PM = PM, method = "adjbox", multiv = TRUE, frame = FALSE)
+
+    stopCluster(cluster)
+}
+
 
 # Define its parameters
 N <- 5      # Number of distintc functional observations (number of days in my case: 1092)
@@ -108,7 +143,9 @@ P <- 16     # Length of the series
 
 data <- data_generator(N, L, P)
 
-data_saver(N, L, P, data)
+saved_df <- data_saver(N, L, P, data)
 
-outliers <- my_outliergram(data)
-print(outliers$ID_outliers)
+# outliers <- my_outliergram(data)
+# print(outliers$ID_outliers)
+
+my_fadalara(saved_df)
