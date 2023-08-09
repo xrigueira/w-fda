@@ -7,9 +7,7 @@
 
 library(fda)
 library(roahd)
-library(adamethods)
-
-source("builder.R")
+library(fdaoutlier)
 
 data_generator <- function(N, L, P) {
 
@@ -103,38 +101,13 @@ my_outliergram <- function(data) {
 
 }
 
-my_fadalara <- function(saved_df) {
+my_muod <- function(saved_df) {
 
-    # Start from saved_df and create basis (line 27 fadalara)
+    md <- muod(dts = saved_df, cut_method = "boxplot")
+    print(md$outliers)
+    # print(md$indices)
 
-    n <- nrow(saved_df)
-
-    # Number of archetypoids:
-    k <- 3
-    numRep <- 20
-    huge <- 200
-
-    # Size of the random sample of observations:
-    m <- 15
-
-    # Number of samples:
-    N_samples <- floor(1 + (n - m) / (m - k))
-    prob <- 0.75
-
-    # Read the generated data
-    library(doParallel)
-    no_cores <- detectCores() - 1
-    cluster <- makeCluster(no_cores)
-    registerDoParallel(cl)
-    clusterSetRNGStream(cl, iseed = 1)
-
-    results <- fadalara(data = saved_df, N = N_samples, m = m, numArchoid = k, numRep = numRep,
-                        huge = huge, prob = prob, type_alg = "fada_rob", compare = FALSE,
-                        PM = PM, method = "adjbox", multiv = TRUE, frame = FALSE)
-
-    stopCluster(cluster)
 }
-
 
 # Define its parameters
 N <- 5      # Number of distintc functional observations (number of days in my case: 1092)
@@ -148,4 +121,4 @@ saved_df <- data_saver(N, L, P, data)
 # outliers <- my_outliergram(data)
 # print(outliers$ID_outliers)
 
-my_fadalara(saved_df)
+my_muod(saved_df)
