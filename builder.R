@@ -50,7 +50,7 @@ builder <- function(time_frame, span, time_step, station, variables) {
 
     } else if (time_frame == "c") {
 
-        # Loof through the data frame to create a matrix for each day
+        # Loop through the data frame to create a matrix for each day
         for (i in 1:(nrow(df) / nrow_days)) {
             start_index <- (i - 1) * nrow_days + 1
             end_index <- i * nrow_days

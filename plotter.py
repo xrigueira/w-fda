@@ -6,7 +6,7 @@ data of each day in a data base."""
 
 # Read the data
 station = 901
-data = pd.read_csv(f'data/labeled_{station}.csv', sep=',', encoding='utf-8', parse_dates=['date'])
+data = pd.read_csv(f'data/labeled_{station}_pro.csv', sep=',', encoding='utf-8', parse_dates=['date'])
 
 # Set the 'date' column as the DataFrame's index
 data.set_index('date', inplace=True)
@@ -35,7 +35,7 @@ for day, day_data in data.groupby(data.index.date):
 
     # Save the image
     fig.subplots_adjust(bottom=0.19)
-    fig.savefig(f'images_gaps/plot_{station}_{day}.png', dpi=300)
+    fig.savefig(f'images/plot_{station}_{day}.png', dpi=300)
     
     # Close the fig for better memory management
     plt.close(fig=fig)
