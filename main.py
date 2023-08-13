@@ -328,19 +328,19 @@ if __name__ == '__main__':
     # Create a class instance
     msa_instance = MSA(station=station, search=False, projections=200, basis=48, detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.1)
 
-    # # Get the timestamps
+    # Get the timestamps
     msa_instance.get_timestamps()
     
     # Calculate Random Forest scores
     msa_instance.rf()
     
-    # # Calculate magnitude, shape, and amplitude
+    # Calculate magnitude, shape, and amplitude
     msa_instance.call_msa()
     
-    # # Detect outliers if any
+    # Detect outliers if any
     msa_instance.outlier_detector()
     
-    # # Plot the results
+    # Plot the results
     msa_instance.plots()
     
     # Calculate accuracy
