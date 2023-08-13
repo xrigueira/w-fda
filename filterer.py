@@ -6,7 +6,7 @@ import pandas as pd
 with too many empty values, and iterates on the rest"""
 
 def mfilterer(File, timeframe, timestep):
-        
+
     fileName, fileExtension = os.path.splitext(File)
     df = pd.read_csv(f'data/{fileName}.csv', delimiter=',')
 
@@ -44,7 +44,7 @@ def mfilterer(File, timeframe, timestep):
         lenWeek = 7
 
     if timeframe == 'a':
-        
+
         indexInit, indexEnd = [], []
         numNaN, consecNaN = [], []
         for i in years:
@@ -97,8 +97,11 @@ def mfilterer(File, timeframe, timestep):
         
         # Interpolate the remaining empty values
         df = (df.interpolate(method='polynomial', order=1)).round(2)
+
+        # Delete the columns needed for preprocessing
+        df = df.drop(columns=['year', 'month', 'day', 'hour', 'minute', 'second', 'startDate', 'endDate', 'weekOrder'])
         
-        # Save the data frame 
+        # Save the data frame
         cols = list(df.columns.values.tolist())
         df.to_csv(f'data/{fileName}_pro.csv', sep=',', encoding='utf-8', index=False, header=cols)
 
@@ -149,6 +152,9 @@ def mfilterer(File, timeframe, timestep):
         
         # Interpolate the remaining empty values
         df = (df.interpolate(method='polynomial', order=1)).round(2)
+        
+        # Delete the columns needed for preprocessing
+        df = df.drop(columns=['year', 'month', 'day', 'hour', 'minute', 'second', 'startDate', 'endDate', 'weekOrder'])
 
         # Save the data frame
         cols = list(df.columns.values.tolist())
@@ -179,10 +185,6 @@ def mfilterer(File, timeframe, timestep):
                         count_numNaN = sum(map(lambda x: x >= limit_numNaN_c, numNaN))
                         count_consecNaN = sum(map(lambda x: x >= limit_consecNaN_c, consecNaN))
                         
-                        # print(k, j, i)
-                        # print(numNaN, consecNaN)
-                        # print(count_numNaN, count_consecNaN)
-                        
                         # Get the first and last index of those days with too many empty (or consecutive) values 
                         # in one variable (NaN in this case)
                         if count_numNaN >= 1 or count_consecNaN >= 1:
@@ -203,6 +205,9 @@ def mfilterer(File, timeframe, timestep):
 
         # Interpolate the remaining empty values
         df = (df.interpolate(method='polynomial', order=2)).round(2)
+
+        # Delete the columns needed for preprocessing
+        df = df.drop(columns=['year', 'month', 'day', 'hour', 'minute', 'second', 'startDate', 'endDate', 'weekOrder'])
 
         # Save the data frame
         cols = list(df.columns.values.tolist())

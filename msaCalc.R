@@ -25,7 +25,6 @@ get_msa <- function(projections, basis) {
 
     # Define the variables for the desired time units
     time_frame <- "c" # "a" for months, "b" for weeks, "c" for days
-    span <- "a" # This variable is to select different combinations later
     time_step <- "15 min"
     station <- "901"
     variables <- c(paste("ammonium_", station, sep = ""),
@@ -37,12 +36,12 @@ get_msa <- function(projections, basis) {
                 )
 
     # Get multivariate time series object (mts)
-    mts <- builder(time_frame = time_frame, span = span, time_step = time_step, station = station, variables = variables)
+    mts <- builder(time_frame = time_frame, time_step = time_step, station = station, variables = variables)
     print("[INFO] mts obtained")
 
     # Directional outlyingness (magnitude and shape)
     magnitude_shape <- get_magnitude_shape(mts, projections)
-    print("[INFO] dirrectional outlyingness obtained")
+    print("[INFO] directional outlyingness obtained")
 
     # Amplitudes
     amplitude <- get_amplitude(mts, basis, station)
