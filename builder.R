@@ -73,3 +73,11 @@ builder <- function(time_frame, time_step, station, variables) {
     }
 
 }
+
+builder_sim <- function() {
+    # Read the data
+
+    # Build mts
+
+    # Return mts
+}

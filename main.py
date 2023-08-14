@@ -7,7 +7,6 @@ import rpy2.robjects as robjects
 import plotly.graph_objects as go
 
 from outDec import outDec
-from random import shuffle
 from datetime import datetime
 
 class MSA():
@@ -156,7 +155,7 @@ class MSA():
         of each function."""
         
         # Load the R function from msaCalc.R
-        with open('msaCalc.R', 'r') as file:
+        with open('fda.R', 'r') as file:
             r_code = file.read()
 
             # Execute the R function get_msa()
@@ -202,6 +201,29 @@ class MSA():
         else:
             print('No outliers found in the data.')
             self.index_outliers = tuple()
+    
+    def real_outdec(self):
+    
+        # Read the csv file
+        data = pd.read_csv(f"data/labeled_{self.station}_pro_msa.csv", sep=',', encoding='utf-8')
+
+        # Convert the 'date' column to datetime type
+        data['date'] = pd.to_datetime(data['date'])
+
+        # Extract the date part from the datetime and create a new column 'day'
+        data['day'] = data['date'].dt.date
+
+        # Group the data by 'day' and calculate the average of the 'label' column within each group
+        average_labels = data.groupby('day', sort=False)['label'].mean()
+
+        # Apply thresholding operation
+        average_labels = average_labels.apply(lambda x: 1 if x >= self.real_outliers_threshold else 0)
+        
+        outliers_dates = average_labels[average_labels == 1].index
+        outliers_indexes = np.where(average_labels == 1)[0]
+
+        # Return the resulting objects
+        return outliers_indexes, outliers_dates
 
     def plots(self):
         
@@ -254,9 +276,7 @@ class MSA():
             fig.show()
 
             # Plot comparison to labeled outliers
-            from real_outdec import real_outdec
-
-            real_outliers_indices, real_outliers_dates = real_outdec(station=901, real_outlier_threshold=self.real_outliers_threshold)
+            real_outliers_indices, real_outliers_dates = self.real_outdec()
 
             # Create an array of outlier indices (indexkNN)
             outliers_indices = np.array(self.index_outliers)
@@ -296,10 +316,8 @@ class MSA():
             fig.show()
 
     def metric(self):
-        
-        from real_outdec import real_outdec
 
-        real_outliers_indices, real_outliers_dates = real_outdec(station=901, real_outlier_threshold=self.real_outliers_threshold)
+        real_outliers_indices, real_outliers_dates = self.real_outdec()
         print(real_outliers_dates)
         # Create an array of outlier indices (indexkNN)
         outliers_indices = np.array(self.index_outliers)
@@ -347,5 +365,4 @@ if __name__ == '__main__':
     jaccard_index, accuracy = msa_instance.metric()
     print('Jaccard similarity index:', jaccard_index)
     print('Accuracy:', accuracy)
-
 
