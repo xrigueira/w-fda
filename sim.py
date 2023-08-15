@@ -25,6 +25,8 @@ class simulator(MSA):
         self.mdata = None
         self.cont_mdata = None
         self.saved_data = None
+        self.outliers_outliergram = None
+        self.outliers_muod = None
         self.timestamps = None
         self.magnitude = None
         self.shape = None
@@ -38,38 +40,52 @@ class simulator(MSA):
         with open('fda.R', 'r') as file:
             r_code = file.read()
     
-        # Excecute the R function data_generator()
-        robjects.r(r_code)
-        mdata = robjects.r['data_generator'](self.N, self.L, self.P)
-        self.mdata = mdata
+            # Excecute the R function data_generator()
+            robjects.r(r_code)
+            mdata = robjects.r['data_generator'](self.N, self.L, self.P)
+            self.mdata = mdata
     
     def call_contaminator(self):
         
         with open('fda.R', 'r') as file:
             r_code = file.read()
     
-        # Excecute the R function data_contaminator()
-        robjects.r(r_code)
-        cont_mdata = robjects.r['data_contaminator'](self.N, self.L, self.P, self.mdata, self.contamination)
-        self.cont_mdata = cont_mdata
+            # Excecute the R function data_contaminator()
+            robjects.r(r_code)
+            cont_mdata = robjects.r['data_contaminator'](self.N, self.L, self.P, self.mdata, self.contamination)
+            self.cont_mdata = cont_mdata
     
     def call_saver(self):
         
         with open('fda.R', 'r') as file:
             r_code = file.read()
         
-        # Excecute the R function data_saver()
-        robjects.r(r_code)
-        # THERE IS AN ERROR WITH THE SAVED DATA. IT SEEMS TO BE REPEAING IT
-        # MAYBE THE PROBLEM IS IN THE WAY I CALCULATE THE NEW N
-        saved_data = robjects.r['data_saver'](int(len(self.cont_mdata[0])/self.P), self.L, self.P, self.cont_mdata)
-        self.saved_data = saved_data
+            # Excecute the R function data_saver()
+            robjects.r(r_code)
+            saved_data = robjects.r['data_saver'](int(len(self.cont_mdata[0])/self.P), self.L, self.P, self.cont_mdata)
+            self.saved_data = saved_data
     
     def call_outliergram(self):
-        pass
-    
+
+        with open('fda.R', 'r') as file:
+            r_code = file.read()
+
+            # Execute the R function get_msa()
+            robjects.r(r_code)
+            outliers_outliergram = robjects.r['my_outliergram'](self.P, self.cont_mdata)
+            self.outliers_outliergram = outliers_outliergram
+
     def call_muod(self):
-        pass
+        
+        with open('fda.R', 'r') as file:
+            r_code = file.read()
+
+            # Execute the R function get_msa()
+            robjects.r(r_code)
+            outliers_muod= robjects.r['my_muod'](self.P, self.saved_data)
+            self.outliers_muod = outliers_muod
+        
+        print(self.outliers_muod)
     
     def call_msa(self):
         
@@ -109,6 +125,12 @@ if __name__ == '__main__':
     # Saved the generated data
     simulator_instance.call_saver()
     
+    # Call the outliergram
+    # simulator_instance.call_outliergram()
+    
+    # Call MUOD
+    simulator_instance.call_muod()
+    
     # Calculate magnitude, shape, and amplitude
     # simulator_instance.call_msa()
     
@@ -136,4 +158,4 @@ if __name__ == '__main__':
 # outliers <- my_outliergram(data_contaminated)
 # print(outliers$ID_outliers)
 
-# my_muod(saved_df, P)
+# my_muod(P, saved_df)

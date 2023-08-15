@@ -536,7 +536,7 @@ data_saver <- function(N, L, P, data) {
 
 }
 
-my_outliergram <- function(data) {
+my_outliergram <- function(P, data) {
 
     # Implementation of the multivariate outliergram proposed by Ieva and Paganoni in 2020
     # https://cran.r-project.org/web/packages/roahd/index.html
@@ -547,15 +547,15 @@ my_outliergram <- function(data) {
 
     mfD <- mfData(time_grid, data) # convert to S3 functional data object
 
-    plot(mfD)
+    # plot(mfD)
 
-    out <- multivariate_outliergram(mfD, Fvalue = 2, shift = TRUE, display = TRUE)
+    results_outliegram <- multivariate_outliergram(mfD, Fvalue = 2, shift = TRUE, display = TRUE)
 
-    return(out)
+    return(results_outliegram$ID_outliers)
 
 }
 
-my_muod <- function(saved_df, P) {
+my_muod <- function(P, saved_df) {
 
     # Implementation of the MUOD algorithm for outlier detection in functional data
     # proposed by in Ojo in 2019.
@@ -583,8 +583,8 @@ my_muod <- function(saved_df, P) {
 
     }
 
-    md <- muod(dts = new_data, cut_method = "boxplot")
-    print(md$outliers)
-    # print(md$indices)
+    results_muod <- muod(dts = new_data, cut_method = "boxplot")
+
+    return(results_muod$outliers)
 
 }
