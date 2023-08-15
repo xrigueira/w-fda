@@ -1,46 +1,126 @@
 import csv
 import numpy as np
 import pandas as pd
-import rpy2.robjects as robject
+import rpy2.robjects as robjects
 
 from outDec import outDec
 from datetime import datetime
 
-class simulator():
+from main import MSA
+
+# I am going to have to change builder, get_timestamps and real_outdec
+
+class simulator(MSA):
     
-    def __init__(self) -> None:
+    def __init__(self, simulation, N, L, P, projections, basis, detection_threshold, contamination, neighbors) -> None:
+        self.simulation = simulation
+        self.N = N                      # Number of distintc functional observations (number of days in my case: 1092)
+        self.L = L                      # Number of components of the data (number of variables)
+        self.P = P                      # Length of the series (legth of one day in my case: 96)
+        self.projections = projections
+        self.basis = basis
+        self.detection_threshold = detection_threshold
+        self.contamination = contamination
+        self.neighbors = neighbors
+        self.mdata = None
+        self.cont_mdata = None
+        self.saved_data = None
+        self.timestamps = None
+        self.magnitude = None
+        self.shape = None
+        self.amplitude = None
+        self.distances = None
+        self.outliers_in_data = None
+        self.index_outliers = None
+        
+    def call_generator(self):
+        
+        with open('fda.R', 'r') as file:
+            r_code = file.read()
+    
+        # Excecute the R function data_generator()
+        robjects.r(r_code)
+        mdata = robjects.r['data_generator'](self.N, self.L, self.P)
+        self.mdata = mdata
+    
+    def call_contaminator(self):
+        
+        with open('fda.R', 'r') as file:
+            r_code = file.read()
+    
+        # Excecute the R function data_contaminator()
+        robjects.r(r_code)
+        cont_mdata = robjects.r['data_contaminator'](self.N, self.L, self.P, self.mdata, self.contamination)
+        self.cont_mdata = cont_mdata
+    
+    def call_saver(self):
+        
+        with open('fda.R', 'r') as file:
+            r_code = file.read()
+        
+        # Excecute the R function data_saver()
+        robjects.r(r_code)
+        # THERE IS AN ERROR WITH THE SAVED DATA. IT SEEMS TO BE REPEAING IT
+        # MAYBE THE PROBLEM IS IN THE WAY I CALCULATE THE NEW N
+        saved_data = robjects.r['data_saver'](int(len(self.cont_mdata[0])/self.P), self.L, self.P, self.cont_mdata)
+        self.saved_data = saved_data
+    
+    def call_outliergram(self):
         pass
+    
+    def call_muod(self):
+        pass
+    
+    def call_msa(self):
+        
+        with open('fda.R', 'r') as file:
+            r_code = file.read()
+
+            # Execute the R function get_msa()
+            robjects.r(r_code)
+            msa = robjects.r['get_msa'](self.simulation, self.projections, self.basis)
+            
+            # Convert and save the result to a numpy.ndarray
+            msa = np.array(msa)
+            self.msa = msa # Store the result in the instance variable
+            np.save('msa.npy', msa, allow_pickle=False, fix_imports=False) # Remove then the program is finished
     
     def get_timestamps(self):
         
-        # I have to adapt this function so it returns indices of the different days.
-        # It could be just by using the length of the mts
-        # Open the CSV file and read the data
-        with open(f'data/labeled_{self.station}_pro_msa.csv', 'r') as file:
-            csv_reader = csv.DictReader(file)
-            
-            # Initialize a list to store unique datetime objects
-            unique_days = []
-            
-            # Iterate over each row in the dataset
-            for row in csv_reader:
-                # Extract the date and convert it to a datetime object
-                date_str = row['date']
-                datetime_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-                
-                # Truncate the time information (optional)
-                datetime_obj = datetime_obj.replace(hour=0, minute=0, second=0, microsecond=0)
-                
-                # Add the datetime object to the unique_days list if it's not already present
-                if datetime_obj not in unique_days:
-                    unique_days.append(datetime_obj)
-                
-        # Convert unique_days to a numpy array and change datetime format
-        unique_days = [datetime_obj.strftime('%d-%m-%Y') for datetime_obj in unique_days]
-        timestamps = np.array(unique_days)
+        timestamps = np.arange(1, len(self.msa) + 1, 1)
         self.timestamps = timestamps
-        
+    
+    def real_outdec(self):
+        print(self.index_outliers)
+        print('Development pending')
 
+
+if __name__ == '__main__':
+    
+    # Create an instance of the simulation class
+    simulator_instance = simulator(simulation=True,  N=200, L=6, P=96, projections=200, basis=48, detection_threshold=15, contamination=0.05, neighbors=10)
+
+    # Generate synthetic data
+    simulator_instance.call_generator()
+    
+    # Contaminate the synthetic data
+    simulator_instance.call_contaminator()
+    
+    # Saved the generated data
+    simulator_instance.call_saver()
+    
+    # Calculate magnitude, shape, and amplitude
+    # simulator_instance.call_msa()
+    
+    # Get the timestamps
+    # simulator_instance.get_timestamps()
+    
+    # Detect outliers if any
+    # simulator_instance.outlier_detector()
+    
+    # Extract real outliers
+    # simulator_instance.real_outdec()
+    
 # R code that I need to run here
 # Define its parameters
 # N <- 200      # Number of distintc functional observations (number of days in my case: 1092)

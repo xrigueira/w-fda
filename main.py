@@ -11,8 +11,9 @@ from datetime import datetime
 
 class MSA():
     
-    def __init__(self, search, station, projections, basis, detection_threshold, contamination, neighbors, real_outliers_threshold) -> None:
+    def __init__(self, station, simulation, search, projections, basis, detection_threshold, contamination, neighbors, real_outliers_threshold) -> None:
         self.station = station
+        self.simulation = simulation
         self.search = search
         self.projections = projections
         self.basis = basis
@@ -20,42 +21,15 @@ class MSA():
         self.contamination = contamination
         self.neighbors = neighbors
         self.real_outliers_threshold = real_outliers_threshold
-        self.timestamps = None
         self.rf_weights = None
         self.msa = None
+        self.timestamps = None
         self.magnitude = None
         self.shape = None
         self.amplitude = None
         self.distances = None
         self.outliers_in_data = None
         self.index_outliers = None
-    
-    def get_timestamps(self):
-        
-        # Open the CSV file and read the data
-        with open(f'data/labeled_{self.station}_pro_msa.csv', 'r') as file:
-            csv_reader = csv.DictReader(file)
-            
-            # Initialize a list to store unique datetime objects
-            unique_days = []
-            
-            # Iterate over each row in the dataset
-            for row in csv_reader:
-                # Extract the date and convert it to a datetime object
-                date_str = row['date']
-                datetime_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-                
-                # Truncate the time information (optional)
-                datetime_obj = datetime_obj.replace(hour=0, minute=0, second=0, microsecond=0)
-                
-                # Add the datetime object to the unique_days list if it's not already present
-                if datetime_obj not in unique_days:
-                    unique_days.append(datetime_obj)
-                
-        # Convert unique_days to a numpy array and change datetime format
-        unique_days = [datetime_obj.strftime('%d-%m-%Y') for datetime_obj in unique_days]
-        timestamps = np.array(unique_days)
-        self.timestamps = timestamps
 
     def rf(self):
         
@@ -154,13 +128,13 @@ class MSA():
         msa (np.array): object with the magnitude, shape, and amplitude value
         of each function."""
         
-        # Load the R function from msaCalc.R
+        # Load the R function 'get_msa()' from fda.R
         with open('fda.R', 'r') as file:
             r_code = file.read()
 
             # Execute the R function get_msa()
             robjects.r(r_code)
-            msa = robjects.r['get_msa'](self.projections, self.basis)
+            msa = robjects.r['get_msa'](self.simulation, self.projections, self.basis)
 
             # Convert and save the result to a numpy.ndarray
             msa = np.array(msa)
@@ -171,6 +145,33 @@ class MSA():
             # self.rf_weights = np.load('rf_weights.npy')
             self.msa = msa * (1 + self.rf_weights[:, np.newaxis])
 
+    def get_timestamps(self):
+        
+        # Open the CSV file and read the data
+        with open(f'data/labeled_{self.station}_pro_msa.csv', 'r') as file:
+            csv_reader = csv.DictReader(file)
+            
+            # Initialize a list to store unique datetime objects
+            unique_days = []
+            
+            # Iterate over each row in the dataset
+            for row in csv_reader:
+                # Extract the date and convert it to a datetime object
+                date_str = row['date']
+                datetime_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+                
+                # Truncate the time information (optional)
+                datetime_obj = datetime_obj.replace(hour=0, minute=0, second=0, microsecond=0)
+                
+                # Add the datetime object to the unique_days list if it's not already present
+                if datetime_obj not in unique_days:
+                    unique_days.append(datetime_obj)
+                
+        # Convert unique_days to a numpy array and change datetime format
+        unique_days = [datetime_obj.strftime('%d-%m-%Y') for datetime_obj in unique_days]
+        timestamps = np.array(unique_days)
+        self.timestamps = timestamps
+    
     def outlier_detector(self):
         
         # Check if there are outliers in the data
@@ -185,6 +186,8 @@ class MSA():
         
         if outliers_in_data == True:
 
+            print('Outliers detected in the data')
+            
             # Now I have to build the outlier detector (unsupervised kNN)
             from sklearn.neighbors import NearestNeighbors
 
@@ -344,16 +347,16 @@ if __name__ == '__main__':
     station = 901
     
     # Create a class instance
-    msa_instance = MSA(station=station, search=False, projections=200, basis=48, detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.1)
-
-    # Get the timestamps
-    msa_instance.get_timestamps()
+    msa_instance = MSA(station=station, simulation=False, search=False, projections=200, basis=48, detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.1)
     
     # Calculate Random Forest scores
     msa_instance.rf()
     
     # Calculate magnitude, shape, and amplitude
     msa_instance.call_msa()
+    
+    # Get the timestamps
+    msa_instance.get_timestamps()
     
     # Detect outliers if any
     msa_instance.outlier_detector()

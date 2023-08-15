@@ -11,17 +11,146 @@ library(tidyr)
 library(vctrs)
 library(tidyverse)
 library(reshape2)
+library(lubridate)
 library(fda)
 library(fda.usc)
 library(fdaoutlier)
 library(roahd)
 
-# Load the files
-source("builder.R")
+time_getter <- function() {
 
-get_amplitude <- function(mts, basis, station) {
+    # Gets time data from the user. Currently unused.
 
-    # This function calculates the amplitude metric of...
+    total_timeunit <- as.integer(readline(prompt = "Enter the desired number of time units: "))
+
+    x <- 0
+    number_timeunit <- vector()
+
+    while (x < total_timeunit) {
+
+        data <- readline(prompt = "Enter each of the time units: ")
+
+        number_timeunit <- c(number_timeunit, data)
+
+        x <- x + 1
+    }
+
+    return(as.integer(number_timeunit))
+}
+
+builder <- function(time_frame, time_step, station, variables) {
+
+    # Reads the database and makes groups of months (a), weeks (b) or days (c).
+
+    # Read the csv file
+    df <- read.csv(paste("data/labeled_", station, "_pro_msa.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
+
+    # Convert the date column to datetime objects
+    df$date <- as.POSIXct(df$date, format = "%Y-%m-%d %H:%M:%S")
+
+    if (time_step == "15 min") {
+        # Set number of row for 15 min data
+        nrow_months <- 2976
+        nrow_weeks <- 672
+        nrow_days <- 96
+
+    } else if (time_step == "1 day") {
+        # Set the number of rows for daily data
+        nrow_months <- 32
+        nrow_weeks <- 8
+    }
+
+    # Subsetting the data.frame to create the list of matrices
+    mts <- list()
+    counter <- 1
+
+    if (time_frame == "a") {
+
+        print("Refactored code not implemented yet for time_frame a")
+
+    } else if (time_frame == "b") {
+
+        print("Refactored code not implemented yet for time_frame b")
+
+    } else if (time_frame == "c") {
+
+        # Loop through the data frame to create a matrix for each day
+        for (i in 1:(nrow(df) / nrow_days)) {
+            start_index <- (i - 1) * nrow_days + 1
+            end_index <- i * nrow_days
+
+            mat <- data.matrix(df[start_index:end_index, variables])
+
+            mts$data[[counter]] <- mat
+            mts$time[[counter]] <- c(day(df$date[start_index]), month(df$date[start_index]), year(df$date[start_index]))
+
+            counter <- counter + 1
+
+        }
+
+    return(mts)
+
+    }
+
+}
+
+builder_sim <- function(time_frame, time_step) {
+
+    # Reads the database and makes groups of months (a), weeks (b) or days (c).
+
+    # Read the csv file
+    df <- read.csv(paste("data/generated_data.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
+
+    if (time_step == "15 min") {
+        # Set number of row for 15 min data
+        nrow_months <- 2976
+        nrow_weeks <- 672
+        nrow_days <- 96
+
+    } else if (time_step == "1 day") {
+        # Set the number of rows for daily data
+        nrow_months <- 32
+        nrow_weeks <- 8
+    }
+
+    # Subsetting the data.frame to create the list of matrices
+    mts <- list()
+    counter <- 1
+
+    if (time_frame == "a") {
+
+        print("Refactored code not implemented yet for time_frame a")
+
+    } else if (time_frame == "b") {
+
+        print("Refactored code not implemented yet for time_frame b")
+
+    } else if (time_frame == "c") {
+
+        # Loop through the data frame to create a matrix for each day
+        for (i in 1:(nrow(df) / nrow_days)) {
+            start_index <- (i - 1) * nrow_days + 1
+            end_index <- i * nrow_days
+
+            mat <- data.matrix(df[start_index:end_index, ])
+
+            mts$data[[counter]] <- mat
+            mts$time[[counter]] <- counter
+
+            counter <- counter + 1
+
+        }
+
+    return(mts)
+
+    }
+
+}
+
+get_amplitude <- function(mts, basis) {
+
+    # Calculates the amplitude metric of a functional object.
+
     # Matrix to create the univariate fdata object
     mat <- matrix(ncol = nrow(mts$data[[1]]), nrow = length(mts$time))
 
@@ -112,6 +241,8 @@ get_amplitude <- function(mts, basis, station) {
 
 get_magnitude_shape <- function(mts, projections) {
 
+    # Calculates the magnitude and shape metrics of a functional object.
+
     # Determine the dimensions of the matrix
     n <- length(mts$data)
     p <- length(mts$data[[1]])
@@ -140,7 +271,75 @@ get_magnitude_shape <- function(mts, projections) {
 
 }
 
+get_msa <- function(simulation, projections, basis) {
+
+    # This function combines 'builder', 'get_amplitude',  'get_magnitude_shape'
+    # and 'real_outdec' to extract the msa score of a functional object and
+    # obtain the index of the real outliers marked in the database.
+
+    # Get starting time
+    start_time <- Sys.time()
+
+    # Define the variables for the desired time units
+    time_frame <- "c" # "a" for months, "b" for weeks, "c" for days
+    time_step <- "15 min"
+    station <- "901"
+    variables <- c(paste("ammonium_", station, sep = ""),
+                    paste("conductivity_", station, sep = ""),
+                    paste("dissolved_oxygen_", station, sep = ""),
+                    paste("pH_", station, sep = ""),
+                    paste("turbidity_", station, sep = ""),
+                    paste("water_temperature_", station, sep = "")
+                )
+
+    if (simulation == TRUE) {
+
+        mts <- builder_sim(time_frame = time_frame, time_step = time_step)
+        print("[INFO] mts obtained")
+
+    } else if (simulation == FALSE) {
+
+        # Get multivariate time series object (mts)
+        mts <- builder(time_frame = time_frame, time_step = time_step, station = station, variables = variables)
+        print("[INFO] mts obtained")
+
+    }
+
+    # Directional outlyingness (magnitude and shape)
+    magnitude_shape <- get_magnitude_shape(mts, projections)
+    print("[INFO] directional outlyingness obtained")
+
+    # Amplitudes
+    amplitude <- get_amplitude(mts, basis)
+    print("[INFO] amplitude obtained")
+
+    # Get magnitude, shape, and amplitude (msa) object by combining magnitude_shape and amplitude
+    msa <- cbind(magnitude_shape, amplitude)
+    print("[INFO] msa obtained")
+
+    if (simulation == FALSE) {
+
+        # Extract the real outliers to check the results
+        real_outliers <- real_outdec(station)
+        print("[INFO] ground truth outliers extracted")
+        print(real_outliers)
+
+    }
+
+
+    # Get ending time
+    end_time <- Sys.time()
+
+    # Output time elapsed
+    print(end_time - start_time)
+
+    return(msa)
+
+}
+
 real_outdec <- function(station) {
+
+    # Extracts the indexes of those time frames labeles as anomalous (1) in the database. 
 
     # Read the csv file
     data <- read.csv(paste("data/labeled_", station, "_pro_msa.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
@@ -171,55 +370,19 @@ real_outdec <- function(station) {
 
 }
 
-get_msa <- function(projections, basis) {
+real_outdec_sim <- function() {
 
-    # Get starting time
-    start_time <- Sys.time()
-
-    # Define the variables for the desired time units
-    time_frame <- "c" # "a" for months, "b" for weeks, "c" for days
-    time_step <- "15 min"
-    station <- "901"
-    variables <- c(paste("ammonium_", station, sep = ""),
-                    paste("conductivity_", station, sep = ""),
-                    paste("dissolved_oxygen_", station, sep = ""),
-                    paste("pH_", station, sep = ""),
-                    paste("turbidity_", station, sep = ""),
-                    paste("water_temperature_", station, sep = "")
-                )
-
-    # Get multivariate time series object (mts)
-    mts <- builder(time_frame = time_frame, time_step = time_step, station = station, variables = variables)
-    print("[INFO] mts obtained")
-
-    # Directional outlyingness (magnitude and shape)
-    magnitude_shape <- get_magnitude_shape(mts, projections)
-    print("[INFO] directional outlyingness obtained")
-
-    # Amplitudes
-    amplitude <- get_amplitude(mts, basis, station)
-    print("[INFO] amplitude obtained")
-
-    # Get magnitude, shape, and amplitude (msa) object by combining magnitude_shape and amplitude
-    msa <- cbind(magnitude_shape, amplitude)
-    print("[INFO] msa obtained")
-
-    # Extract the real outliers to check the results
-    real_outliers <- real_outdec(station)
-    print("[INFO] ground truth outliers extracted")
-    print(real_outliers)
-
-    # Get ending time
-    end_time <- Sys.time()
-
-    # Output time elapsed
-    print(end_time - start_time)
-
-    return(msa)
+    print("Development peding")
 
 }
 
 data_generator <- function(N, L, P) {
+
+    # This function generates synthetic data for simulation purposes.
+    # Arguments:
+    # N (int) <- number of distinct functional observations.
+    # L (iny) <- number of variables of the data.
+    # P (int) <- lenght of the series.
 
     # Define the seed
     set.seed(1)
@@ -268,7 +431,11 @@ data_generator <- function(N, L, P) {
     return(mdata)
 }
 
-data_contaminator <- function(N, data, contamination) {
+data_contaminator <- function(N, L, P, data, contamination) {
+
+    # Adds a certain number of contaminates series to the generated data.
+    # The number of contaminates series is defined by the contamination (float)
+    # parameter.
 
     # Get the number of outliers based on the contamination
     if (contamination == 0) {
@@ -341,6 +508,8 @@ data_contaminator <- function(N, data, contamination) {
 
 data_saver <- function(N, L, P, data) {
 
+    # Saved the generated data as a CSV file
+
     # Create an empty data frame
     df <- data.frame(matrix(nrow = N * P, ncol = L))
 
@@ -361,13 +530,17 @@ data_saver <- function(N, L, P, data) {
     }
 
     # Save the generated data
-    write.csv(df, file = "generated_data.csv", row.names = FALSE)
+    write.csv(df, file = "data/generated_data.csv", row.names = FALSE)
 
     return(df)
 
 }
 
 my_outliergram <- function(data) {
+
+    # Implementation of the multivariate outliergram proposed by Ieva and Paganoni in 2020
+    # https://cran.r-project.org/web/packages/roahd/index.html
+    # https://journal.r-project.org/archive/2019/RJ-2019-032/RJ-2019-032.pdf
 
     # Define the configuration of the horizontal axis
     time_grid <- seq(0, 1, length.out = P)
@@ -383,6 +556,10 @@ my_outliergram <- function(data) {
 }
 
 my_muod <- function(saved_df, P) {
+
+    # Implementation of the MUOD algorithm for outlier detection in functional data
+    # proposed by in Ojo in 2019.
+    # https://link.springer.com/article/10.1007/s11634-021-00460-9
 
     # dt1 <- simulation_model1()
 

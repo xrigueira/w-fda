@@ -4,10 +4,10 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
-"""The function checkGaps() look for gaps in the times series and fills them with the missing dates"""
-
 def checkGaps(File, timestep, varname):
 
+    """The function checkGaps() look for gaps in the times series and fills them with the missing dates"""
+    
     # Read the file
     fileName, fileExtension = os.path.splitext(File)
 
