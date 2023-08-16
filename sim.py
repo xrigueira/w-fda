@@ -35,6 +35,7 @@ class simulator(MSA):
         self.distances = None
         self.outliers_in_data = None
         self.index_outliers = None
+        self.real_outliers = None
         
     def call_generator(self):
         
@@ -116,23 +117,26 @@ class simulator(MSA):
         self.timestamps = timestamps
     
     def real_outdec(self):
-        print(self.index_outliers)
-        print('Development pending')
+        
+        real_outliers = list(range(self.N + 1, int(self.N + self.N * self.contamination + 1), 1))
+        self.real_outdec = real_outliers
+        
+        
 
 
 if __name__ == '__main__':
     
     # Create an instance of the simulation class
-    simulator_instance = simulator(simulation=True,  N=200, L=6, P=96, projections=200, basis=48, detection_threshold=15, contamination=0.05, neighbors=10)
+    simulator_instance = simulator(simulation=True, N=200, L=6, P=96, projections=200, basis=48, detection_threshold=15, contamination=0.05, neighbors=10)
 
     # Generate synthetic data
-    simulator_instance.call_generator()
+    # simulator_instance.call_generator()
     
     # Contaminate the synthetic data
-    simulator_instance.call_contaminator()
+    # simulator_instance.call_contaminator()
     
     # Saved the generated data
-    simulator_instance.call_saver()
+    # simulator_instance.call_saver()
     
     # Call the outliergram
     # simulator_instance.call_outliergram()
@@ -141,7 +145,7 @@ if __name__ == '__main__':
     # simulator_instance.call_muod()
     
     # Call MS Dai Genton
-    simulator_instance.call_ms()
+    # simulator_instance.call_ms()
     
     # Calculate magnitude, shape, and amplitude
     # simulator_instance.call_msa()
@@ -153,7 +157,7 @@ if __name__ == '__main__':
     # simulator_instance.outlier_detector()
     
     # Extract real outliers
-    # simulator_instance.real_outdec()
+    simulator_instance.real_outdec()
     
 # R code that I need to run here
 # Define its parameters
