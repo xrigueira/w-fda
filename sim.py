@@ -93,7 +93,8 @@ class simulator(MSA):
 
             # Execute the R function get_msa()
             robjects.r(r_code)
-            outliers_muod= robjects.r['my_ms'](self.cont_mdata, self.projections)
+            outliers_ms= robjects.r['my_ms'](self.saved_data, self.projections)
+            self.outliers_ms = outliers_ms
         
     def call_msa(self):
         

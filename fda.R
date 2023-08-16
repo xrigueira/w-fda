@@ -543,7 +543,7 @@ my_outliergram <- function(P, data) {
 
 }
 
-my_muod <- function(P, saved_df) {
+my_muod <- function(P, saved_data) {
 
     # Implementation of the MUOD algorithm for outlier detection in functional data
     # proposed by in Ojo in 2019.
@@ -555,11 +555,11 @@ my_muod <- function(P, saved_df) {
     new_data <- data.frame()
 
     # Iterate through each group and transform the data
-    for (start_row in seq(1, nrow(saved_df), by = P)) {
+    for (start_row in seq(1, nrow(saved_data), by = P)) {
 
-        end_row <- min(start_row + P - 1, nrow(saved_df))
+        end_row <- min(start_row + P - 1, nrow(saved_data))
 
-        group <- saved_df[start_row:end_row, ]
+        group <- saved_data[start_row:end_row, ]
 
         transformed_group <- as.vector(unlist(group))
 
@@ -577,38 +577,45 @@ my_muod <- function(P, saved_df) {
 
 }
 
-my_ms <- function(mts, projections) {
+my_ms <- function(saved_data, projections) {
 
-    # This has to build the matrix_data from saved_df instead of mts
+    # Determine the dimensions of the matrix
+    p <- 96
+    n <- nrow(saved_data) / p
+    d <- ncol(saved_data)
+
     # Combine the extracted columns into a single 3D array
-    matrix_data <- array(unlist(mts), dim = c(96, 6, 210))
+    matrix_data <- array(0, dim = c(n, p, d))
 
-    # Print the dimensions of the resulting array
-    matrix_data <- aperm(matrix_data, c(3, 1, 2))
+    # Fill the array with data from the data.frame
+    for (i in 1:6) {
+
+        matrix_data[, , i] <- matrix(saved_data[, i], ncol = 96, byrow = TRUE)
+
+    }
 
     dirout <- dir_out(dts = matrix_data, n_projections = projections, seed = 0, return_distance = TRUE)
 
-    magnitude_shape <- dirout$ms_matrix
+    # Extract the distance
+    distance <- dirout$distance
 
-    # rownames(magnitude_shape) <- mts$time
-    # colnames(magnitude_shape) <- c("magnitude", "shape")
+    # Perform Min-Max scaling
+    min_value <- min(distance)
+    max_value <- max(distance)
+    scaled_distance <- (distance - min_value) / (max_value - min_value)
 
-    return(magnitude_shape)
+    # Get the F distribution
+    y_qf <- qf(scaled_distance, df1 = 2, df2 = 3)
+
+    # Extract the index of those values above the quantile
+    desired_quantile <- 0.993
+    index_of_quantile <- which.min(abs(y_qf - desired_quantile))
+
+    outliers <- which(distance >= distance[index_of_quantile])
+
+    # Extract the outliers
+    # outliers <- which(dirout$distance > (quantile(dirout$distance, probs = 0.95)))
+
+    return(outliers)
 
 }
-
-# TESTING AREA
-# station <- "901"
-# variables <- c(paste("ammonium_", station, sep = ""),
-#                     paste("conductivity_", station, sep = ""),
-#                     paste("dissolved_oxygen_", station, sep = ""),
-#                     paste("pH_", station, sep = ""),
-#                     paste("turbidity_", station, sep = ""),
-#                     paste("water_temperature_", station, sep = "")
-#                 )
-
-# mts <- builder(time_frame = "c", time_step = "15 min", station = station, variables = variables)
-# ms <- get_magnitude_shape(mts, projections = 200)
-
-# mts <- builder_sim(time_frame = "c", time_step = "15 min")
-# ms <- my_ms(mts, projections = 200)
