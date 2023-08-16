@@ -27,6 +27,7 @@ class simulator(MSA):
         self.saved_data = None
         self.outliers_outliergram = None
         self.outliers_muod = None
+        self.outliers_ms = None
         self.timestamps = None
         self.magnitude = None
         self.shape = None
@@ -84,9 +85,16 @@ class simulator(MSA):
             robjects.r(r_code)
             outliers_muod= robjects.r['my_muod'](self.P, self.saved_data)
             self.outliers_muod = outliers_muod
-        
-        print(self.outliers_muod)
     
+    def call_ms(self):
+        
+        with open('fda.R', 'r') as file:
+            r_code = file.read()
+
+            # Execute the R function get_msa()
+            robjects.r(r_code)
+            outliers_muod= robjects.r['my_ms'](self.cont_mdata, self.projections)
+        
     def call_msa(self):
         
         with open('fda.R', 'r') as file:
@@ -129,7 +137,10 @@ if __name__ == '__main__':
     # simulator_instance.call_outliergram()
     
     # Call MUOD
-    simulator_instance.call_muod()
+    # simulator_instance.call_muod()
+    
+    # Call MS Dai Genton
+    simulator_instance.call_ms()
     
     # Calculate magnitude, shape, and amplitude
     # simulator_instance.call_msa()

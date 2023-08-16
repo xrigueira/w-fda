@@ -245,24 +245,18 @@ get_magnitude_shape <- function(mts, projections) {
 
     # Determine the dimensions of the matrix
     n <- length(mts$data)
-    p <- length(mts$data[[1]])
-    d <- length(mts$data[[1]][[1]])
+    p <- nrow(mts$data[[1]])
+    d <- ncol(mts$data[[1]])
 
-    # Create an empty matrix
-    matrix_data <- array(NA, dim = c(n, p, d))
+    # Combine the extracted columns into a single 3D array
+    matrix_data <- array(unlist(mts), dim = c(p, d, n))
 
-    # Populate the matrix with the extracted data
-    for (i in 1:n) {
-        for (j in 1:p) {
-            for (k in 1:d) {
-                matrix_data[i, j, k] <- mts$data[[i]][[j]][[k]]
-            }
-        }
-    }
+    matrix_data <- aperm(matrix_data, c(3, 1, 2))
 
     dirout <- dir_out(dts = matrix_data, n_projections = projections, seed = 0, return_distance = TRUE)
 
-    magnitude_shape <- dirout$ms_matrix
+    magnitude <- apply(dirout$ms_matrix[, 1:d], 1, mean)
+    magnitude_shape <- cbind(magnitude, dirout$ms_matrix[, d + 1])
 
     rownames(magnitude_shape) <- mts$time
     colnames(magnitude_shape) <- c("magnitude", "shape")
@@ -367,12 +361,6 @@ real_outdec <- function(station) {
     outliers_indexes <- which(average_labels == 1)
 
     return(outliers_indexes)
-
-}
-
-real_outdec_sim <- function() {
-
-    print("Development peding")
 
 }
 
@@ -588,3 +576,39 @@ my_muod <- function(P, saved_df) {
     return(results_muod$outliers)
 
 }
+
+my_ms <- function(mts, projections) {
+
+    # This has to build the matrix_data from saved_df instead of mts
+    # Combine the extracted columns into a single 3D array
+    matrix_data <- array(unlist(mts), dim = c(96, 6, 210))
+
+    # Print the dimensions of the resulting array
+    matrix_data <- aperm(matrix_data, c(3, 1, 2))
+
+    dirout <- dir_out(dts = matrix_data, n_projections = projections, seed = 0, return_distance = TRUE)
+
+    magnitude_shape <- dirout$ms_matrix
+
+    # rownames(magnitude_shape) <- mts$time
+    # colnames(magnitude_shape) <- c("magnitude", "shape")
+
+    return(magnitude_shape)
+
+}
+
+# TESTING AREA
+# station <- "901"
+# variables <- c(paste("ammonium_", station, sep = ""),
+#                     paste("conductivity_", station, sep = ""),
+#                     paste("dissolved_oxygen_", station, sep = ""),
+#                     paste("pH_", station, sep = ""),
+#                     paste("turbidity_", station, sep = ""),
+#                     paste("water_temperature_", station, sep = "")
+#                 )
+
+# mts <- builder(time_frame = "c", time_step = "15 min", station = station, variables = variables)
+# ms <- get_magnitude_shape(mts, projections = 200)
+
+# mts <- builder_sim(time_frame = "c", time_step = "15 min")
+# ms <- my_ms(mts, projections = 200)
