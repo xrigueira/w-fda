@@ -1,4 +1,5 @@
 import csv
+import time
 import numpy as np
 import pandas as pd
 import rpy2.robjects as robjects
@@ -119,24 +120,57 @@ class simulator(MSA):
     def real_outdec(self):
         
         real_outliers = list(range(self.N + 1, int(self.N + self.N * self.contamination + 1), 1))
-        self.real_outdec = real_outliers
+        self.real_outliers = real_outliers
+    
+    def metric(self):
         
+        # Retrive results and turn into sets
+        outliers_outliergram = set(list(self.outliers_outliergram))
+        outliers_muod = set(list(self.outliers_muod))
+        outliers_ms = set(list(self.outliers_ms))
+        outliers_msa = set(list(self.index_outliers[0]))
+        real_outliers = set(self.real_outliers)
         
+        # Calculate the length of each intersection and union
+        intersection_outliergram = len(real_outliers.intersection(outliers_outliergram))
+        union_outliergram = len(real_outliers.union(outliers_outliergram))
+        intersection_muod = len(real_outliers.intersection(outliers_muod))
+        union_muod = len(real_outliers.union(outliers_muod))
+        intersection_ms = len(real_outliers.intersection(outliers_ms))
+        union_ms = len(real_outliers.union(outliers_ms))
+        intersection_msa = len(real_outliers.intersection(outliers_msa))
+        union_msa = len(real_outliers.union(outliers_msa))
+        
+        # Get the Jaccard similarity indix for each method
+        jaccard_index_outliergram = intersection_outliergram / union_outliergram if union_outliergram > 0 else 1.0
+        jaccard_index_muod = intersection_muod / union_muod if union_muod > 0 else 1.0
+        jaccard_index_ms = intersection_ms / union_ms if union_ms > 0 else 1.0
+        jaccard_index_msa = intersection_msa / union_msa if union_msa > 0 else 1.0
+        
+        # Calculate the raw accuracy score for each method
+        accuracy_outliergram = intersection_outliergram / len(real_outliers)
+        accuracy_muod = intersection_muod / len(real_outliers)
+        accuracy_ms = intersection_ms / len(real_outliers)
+        accuracy_msa =intersection_msa / len(real_outliers)
+
 
 
 if __name__ == '__main__':
+    
+    # Set up timer
+    start = time.time()
     
     # Create an instance of the simulation class
     simulator_instance = simulator(simulation=True, N=200, L=6, P=96, projections=200, basis=48, detection_threshold=15, contamination=0.05, neighbors=10)
 
     # Generate synthetic data
-    # simulator_instance.call_generator()
+    simulator_instance.call_generator()
     
     # Contaminate the synthetic data
-    # simulator_instance.call_contaminator()
+    simulator_instance.call_contaminator()
     
     # Saved the generated data
-    # simulator_instance.call_saver()
+    simulator_instance.call_saver()
     
     # Call the outliergram
     # simulator_instance.call_outliergram()
@@ -148,16 +182,21 @@ if __name__ == '__main__':
     # simulator_instance.call_ms()
     
     # Calculate magnitude, shape, and amplitude
-    # simulator_instance.call_msa()
+    simulator_instance.call_msa()
     
     # Get the timestamps
-    # simulator_instance.get_timestamps()
+    simulator_instance.get_timestamps()
     
     # Detect outliers if any
-    # simulator_instance.outlier_detector()
+    simulator_instance.outlier_detector()
     
     # Extract real outliers
-    simulator_instance.real_outdec()
+    # simulator_instance.real_outdec()
+    
+    # Calculate accuracy
+    simulator_instance.metric()
+    
+    print((time.time() - start) / (60), 'minutes elapsed')
     
 # R code that I need to run here
 # Define its parameters

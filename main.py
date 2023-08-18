@@ -224,7 +224,7 @@ class MSA():
         
         outliers_dates = average_labels[average_labels == 1].index
         outliers_indexes = np.where(average_labels == 1)[0]
-
+        
         # Return the resulting objects
         return outliers_indexes, outliers_dates
 

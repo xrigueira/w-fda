@@ -537,7 +537,7 @@ my_outliergram <- function(P, data) {
 
     # plot(mfD)
 
-    results_outliegram <- multivariate_outliergram(mfD, Fvalue = 2, shift = TRUE, display = TRUE)
+    results_outliegram <- multivariate_outliergram(mfD, Fvalue = 2, shift = TRUE, display = FALSE)
 
     return(results_outliegram$ID_outliers)
 
@@ -573,7 +573,9 @@ my_muod <- function(P, saved_data) {
 
     results_muod <- muod(dts = new_data, cut_method = "boxplot")
 
-    return(results_muod$outliers)
+    outliers <- sort(unique(Reduce(combine, results_muod$outliers)))
+
+    return(outliers)
 
 }
 
