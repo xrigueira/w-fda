@@ -2,14 +2,12 @@ import csv
 import time
 import numpy as np
 import pandas as pd
+import statistics as stats
 import rpy2.robjects as robjects
 
-from outDec import outDec
 from datetime import datetime
 
 from main import MSA
-
-# I am going to have to change builder, get_timestamps and real_outdec
 
 class simulator(MSA):
     
@@ -128,7 +126,10 @@ class simulator(MSA):
         outliers_outliergram = set(list(self.outliers_outliergram))
         outliers_muod = set(list(self.outliers_muod))
         outliers_ms = set(list(self.outliers_ms))
-        outliers_msa = set(list(self.index_outliers[0]))
+        if len(self.index_outliers) == 0:
+            outliers_msa = []
+        else:
+            outliers_msa = set([num + 1 for num in list(self.index_outliers[0])])
         real_outliers = set(self.real_outliers)
         
         # Calculate the length of each intersection and union
@@ -148,69 +149,88 @@ class simulator(MSA):
         jaccard_index_msa = intersection_msa / union_msa if union_msa > 0 else 1.0
         
         # Calculate the raw accuracy score for each method
-        accuracy_outliergram = intersection_outliergram / len(real_outliers)
-        accuracy_muod = intersection_muod / len(real_outliers)
-        accuracy_ms = intersection_ms / len(real_outliers)
-        accuracy_msa =intersection_msa / len(real_outliers)
-
+        # accuracy_outliergram = intersection_outliergram / len(real_outliers)
+        # accuracy_muod = intersection_muod / len(real_outliers)
+        # accuracy_ms = intersection_ms / len(real_outliers)
+        # accuracy_msa =intersection_msa / len(real_outliers)
+        
+        results = {'jaccard_outliergram': jaccard_index_outliergram,
+                    'jaccard_muod': jaccard_index_muod,
+                    'jaccard_ms': jaccard_index_ms,
+                    'jaccard_msa': jaccard_index_msa}
+                    # 'accuracy_outliergram': accuracy_outliergram,
+                    # 'accuracy_muod': accuracy_muod,
+                    # 'accuracy_ms': accuracy_ms,
+                    # 'accuracy_msa': accuracy_msa}
+        
+        return results
 
 
 if __name__ == '__main__':
     
-    # Set up timer
-    start = time.time()
+    # Define dataframe to store the results
+    df_results = pd.DataFrame(columns=['contamination', 'outliergram', 'muod', 'ms', 'msa'])
     
-    # Create an instance of the simulation class
-    simulator_instance = simulator(simulation=True, N=200, L=6, P=96, projections=200, basis=48, detection_threshold=15, contamination=0.05, neighbors=10)
+    # Define contamination levels:
+    contaminations = [0, 0.01, 0.02, 0.05, 0.1, 0.15, 0.2]
+    
+    # Define lists to store the results and get their mean
+    results_outliergram, results_muod, results_ms, results_msa = [], [], [], []
+    
+    for contamination in contaminations:
+        
+        for i in range(2):
+            
+            # Set up timer
+            start = time.time()
 
-    # Generate synthetic data
-    simulator_instance.call_generator()
-    
-    # Contaminate the synthetic data
-    simulator_instance.call_contaminator()
-    
-    # Saved the generated data
-    simulator_instance.call_saver()
-    
-    # Call the outliergram
-    # simulator_instance.call_outliergram()
-    
-    # Call MUOD
-    # simulator_instance.call_muod()
-    
-    # Call MS Dai Genton
-    # simulator_instance.call_ms()
-    
-    # Calculate magnitude, shape, and amplitude
-    simulator_instance.call_msa()
-    
-    # Get the timestamps
-    simulator_instance.get_timestamps()
-    
-    # Detect outliers if any
-    simulator_instance.outlier_detector()
-    
-    # Extract real outliers
-    # simulator_instance.real_outdec()
-    
-    # Calculate accuracy
-    simulator_instance.metric()
-    
-    print((time.time() - start) / (60), 'minutes elapsed')
-    
-# R code that I need to run here
-# Define its parameters
-# N <- 200      # Number of distintc functional observations (number of days in my case: 1092)
-# L <- 6      # Number of components of the data (number of variables)
-# P <- 96    # Length of the series (legth of one day in my case: 96)
+            # Create an instance of the simulation class
+            simulator_instance = simulator(simulation=True, N=200, L=6, P=96, projections=200, basis=48, detection_threshold=15, contamination=contamination, neighbors=10)
 
-# data <- data_generator(N, L, P)
-
-# data_contaminated <- data_contaminator(N, data, contamination = 0.05)
-
-# saved_df <- data_saver(N = nrow(data_contaminated[[1]]), L, P, data_contaminated)
-
-# outliers <- my_outliergram(data_contaminated)
-# print(outliers$ID_outliers)
-
-# my_muod(P, saved_df)
+            # Generate synthetic data
+            simulator_instance.call_generator()
+            
+            # Contaminate the synthetic data
+            simulator_instance.call_contaminator()
+            
+            # Saved the generated data
+            simulator_instance.call_saver()
+            
+            # Call the outliergram
+            simulator_instance.call_outliergram()
+            
+            # Call MUOD
+            simulator_instance.call_muod()
+            
+            # Call MS Dai Genton
+            simulator_instance.call_ms()
+            
+            # Calculate magnitude, shape, and amplitude
+            simulator_instance.call_msa()
+            
+            # Get the timestamps
+            simulator_instance.get_timestamps()
+            
+            # Detect outliers if any
+            simulator_instance.outlier_detector()
+            
+            # Extract real outliers
+            simulator_instance.real_outdec()
+            
+            # Calculate accuracy
+            results = simulator_instance.metric()
+            
+            results_outliergram.append(results['jaccard_outliergram'])
+            results_muod.append(results['jaccard_muod'])
+            results_ms.append(results['jaccard_ms'])
+            results_msa.append(results['jaccard_msa'])
+            
+            print((time.time() - start) / (60), 'minutes elapsed')
+        
+        df_results.loc[len(df_results.index)] = [contamination, stats.mean(results_outliergram), stats.mean(results_muod), stats.mean(results_ms), stats.mean(results_msa)]
+        
+        # Clean the results lists
+        results_outliergram, results_muod, results_ms, results_msa = [], [], [], []
+    
+    # Save the results
+    df_results.to_csv('results.csv', sep=',', encoding='utf-8', index=True)

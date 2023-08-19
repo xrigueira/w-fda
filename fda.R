@@ -373,7 +373,7 @@ data_generator <- function(N, L, P) {
     # P (int) <- lenght of the series.
 
     # Define the seed
-    set.seed(1)
+    set.seed(sample(1:1000, 1))
 
     # Define the configuration of the horizontal axis
     time_grid <- seq(0, 1, length.out = P)
