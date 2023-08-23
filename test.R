@@ -1,8 +1,11 @@
 # Get the accuracy of outliergram and muod on 901
 
-# msa -> 41%
-# outliergram -> %
-# muod -> %
+# jaccard_msa -> 0.051470588
+# accuracy_msa 41.17%>
+# jaccard_outliergram -> 0
+# accuracy_outliergram -> 0%
+# jaccard_muod -> 0.07561437
+# accuracy_muod -> 58.82%
 
 source("fda.R")
 
@@ -42,38 +45,56 @@ real_outdec <- function(station) {
 # Read the data
 station <- "901"
 
-# Read the csv file
-df <- read.csv(paste("data/labeled_", station, "_pro.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
+# # Read the csv file
+# df <- read.csv(paste("data/labeled_", station, "_pro.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
 
-# Select the columns with variables
-df <- df[, 2:7]
+# # Select the columns with variables
+# df <- df[, 2:7]
 
-## Reshape data before feeding it into the outliergram
-# Calculate the number of days
-num_days <- nrow(df) / 96
+# ## Reshape data before feeding it into the outliergram
+# # Calculate the number of days
+# num_days <- nrow(df) / 96
 
-# Create a list to hold the matrices
-matrix_list <- list()
+# # Create a list to hold the matrices
+# matrix_list <- list()
 
-# Iterate over each variable
-for (col_index in 1:6) {
+# # Iterate over each variable
+# for (col_index in 1:6) {
 
-    variable_data <- df[, col_index] # Extract the data for each variable
-    variable_matrix <- matrix(variable_data, nrow = num_days, ncol = 96, byrow = TRUE) # Create the matrix
-    matrix_list[[col_index]] <- variable_matrix  # Add the matrix to the list
+#     variable_data <- df[, col_index] # Extract the data for each variable
+#     variable_matrix <- matrix(variable_data, nrow = num_days, ncol = 96, byrow = TRUE) # Create the matrix
+#     matrix_list[[col_index]] <- variable_matrix  # Add the matrix to the list
 
-}
+# }
 
-outliers_outliergram <- my_outliergram(P = 96, matrix_list)
-print(outliers_outliergram)
+# outliers_outliergram <- my_outliergram(P = 96, matrix_list)
+# print(outliers_outliergram)
 
-# Implement MUOD
-# Continue here:
-# 1. Use data saver to adapt the data for MUOD
-# 2. Get the results from MUOD
-# 3. Implement the Jaccard Index and Accuract metrics.
+# # Implement MUOD
+# saved_df <- data_saver(N = num_days, L = 6, P = 96, data = matrix_list)
+
+# outliers_muod <- my_muod(P = 96, saved_data = saved_df)
+# print(outliers_muod)
+
 
 # real_outliers <- real_outdec(station)
 # print(real_outliers)
 
-# data <- data_generator(N = 20, L = 6, P = 10)
+# Get Jaccard Index and Accuracy score
+intersection_outliergram <- length(intersect(real_outliers, outliers_outliergram))
+union_outliergram <- length(union(real_outliers, outliers_outliergram))
+
+intersection_muod <- length(intersect(real_outliers, outliers_muod))
+union_muod <- length(union(real_outliers, outliers_muod))
+
+jaccard_outliergram <- ifelse(union_outliergram > 0, intersection_outliergram / union_outliergram, 1.0)
+jaccard_muod <- ifelse(union_muod > 0, intersection_muod / union_muod, 1.0)
+
+accuracy_outliergram <- intersection_outliergram / length(real_outliers)
+accuracy_muod <- intersection_muod / length(real_outliers)
+
+print(jaccard_outliergram)
+print(jaccard_muod)
+
+print(accuracy_outliergram)
+print(accuracy_muod)
