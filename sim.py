@@ -179,13 +179,13 @@ if __name__ == '__main__':
     
     for contamination in contaminations:
         
-        for i in range(2):
+        for i in range(50):
             
             # Set up timer
             start = time.time()
 
             # Create an instance of the simulation class
-            simulator_instance = simulator(simulation=True, N=200, L=6, P=96, projections=200, basis=48, detection_threshold=15, contamination=contamination, neighbors=10)
+            simulator_instance = simulator(simulation=True, N=200, L=6, P=96, projections=200, basis=48, detection_threshold=39.50, contamination=contamination, neighbors=10)
 
             # Generate synthetic data
             simulator_instance.call_generator()
