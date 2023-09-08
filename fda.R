@@ -43,7 +43,7 @@ builder <- function(time_frame, time_step, station, variables) {
     # Reads the database and makes groups of months (a), weeks (b) or days (c).
 
     # Read the csv file
-    df <- read.csv(paste("data/labeled_", station, "_pro_msa.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
+    df <- read.csv(paste("data/labeled_", station, "_pro.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
 
     # Convert the date column to datetime objects
     df$date <- as.POSIXct(df$date, format = "%Y-%m-%d %H:%M:%S")
@@ -91,6 +91,46 @@ builder <- function(time_frame, time_step, station, variables) {
     return(mts)
 
     }
+
+}
+
+builder_hours <- function(nhours, station, variables) {
+
+    # Reads the database and makes groups of hours.
+    nrow <- nhours * 4
+
+    # Read the csv file
+    df <- read.csv(paste("data/labeled_", station, "_pro.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
+
+    # Convert the date column to datetime objects
+    df$date <- as.POSIXct(df$date, format = "%Y-%m-%d %H:%M:%S")
+
+    # Subsetting the data.frame to create the list of matrices
+    mts <- list()
+    counter <- 1
+    timer <- 1 # Used to define the time stamps
+
+    # Loop through the data frame to create a matrix for defined interval of hours
+    for (i in 1:(nrow(df) / nrow)) {
+            start_index <- (i - 1) * nrow + 1
+            end_index <- i * nrow
+
+            mat <- data.matrix(df[start_index:end_index, variables])
+
+            mts$data[[counter]] <- mat
+            mts$time[[counter]] <- c(day(df$date[start_index]), month(df$date[start_index]), year(df$date[start_index]), timer)
+
+            if (timer != 6) {
+                timer <- timer + 1
+            } else {
+                timer <- 1
+            }
+
+            counter <- counter + 1
+
+        }
+
+    return(mts)
 
 }
 
@@ -265,7 +305,7 @@ get_magnitude_shape <- function(mts, projections) {
 
 }
 
-get_msa <- function(simulation, projections, basis) {
+get_msa <- function(hours, nhours, simulation, projections, basis) {
 
     # This function combines 'builder', 'get_amplitude',  'get_magnitude_shape'
     # and 'real_outdec' to extract the msa score of a functional object and
@@ -291,7 +331,13 @@ get_msa <- function(simulation, projections, basis) {
         mts <- builder_sim(time_frame = time_frame, time_step = time_step)
         print("[INFO] mts obtained")
 
-    } else if (simulation == FALSE) {
+    } else if (hours == TRUE) {
+
+        # Get multivariate time series object (mts)
+        mts <- builder_hours(nhours, station, variables)
+        print("[INFO] mts obtained")
+
+    } else {
 
         # Get multivariate time series object (mts)
         mts <- builder(time_frame = time_frame, time_step = time_step, station = station, variables = variables)
@@ -621,3 +667,14 @@ my_ms <- function(saved_data, projections) {
     return(outliers)
 
 }
+
+# ########SECTION TO RUN CODE########
+# station <- "901"
+# variables <- c(paste("ammonium_", station, sep = ""),
+#                     paste("conductivity_", station, sep = ""),
+#                     paste("dissolved_oxygen_", station, sep = ""),
+#                     paste("pH_", station, sep = ""),
+#                     paste("turbidity_", station, sep = ""),
+#                     paste("water_temperature_", station, sep = "")
+#                 )
+# mts <- builder_hours(hours = 4, station, variables = variables)

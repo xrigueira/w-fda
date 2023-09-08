@@ -11,8 +11,10 @@ from datetime import datetime
 
 class MSA():
     
-    def __init__(self, station, simulation, search, projections, basis, detection_threshold, contamination, neighbors, real_outliers_threshold) -> None:
+    def __init__(self, station, hours, nhours, simulation, search, projections, basis, detection_threshold, contamination, neighbors, real_outliers_threshold) -> None:
         self.station = station
+        self.hours = hours
+        self.nhours = nhours
         self.simulation = simulation
         self.search = search
         self.projections = projections
@@ -134,7 +136,7 @@ class MSA():
 
             # Execute the R function get_msa()
             robjects.r(r_code)
-            msa = robjects.r['get_msa'](self.simulation, self.projections, self.basis)
+            msa = robjects.r['get_msa'](self.hours, self.nhours, self.simulation, self.projections, self.basis)
 
             # Convert and save the result to a numpy.ndarray
             msa = np.array(msa)
@@ -143,12 +145,12 @@ class MSA():
             
             # Apply the weights obtained with Random Forest
             # self.rf_weights = np.load('rf_weights.npy')
-            self.msa = msa * (1 + self.rf_weights[:, np.newaxis])
+            # self.msa = msa * (1 + self.rf_weights[:, np.newaxis])
 
     def get_timestamps(self):
         
         # Open the CSV file and read the data
-        with open(f'data/labeled_{self.station}_pro_msa.csv', 'r') as file:
+        with open(f'data/labeled_{self.station}_pro.csv', 'r') as file:
             csv_reader = csv.DictReader(file)
             
             # Initialize a list to store unique datetime objects
@@ -171,7 +173,22 @@ class MSA():
         unique_days = [datetime_obj.strftime('%d-%m-%Y') for datetime_obj in unique_days]
         timestamps = np.array(unique_days)
         self.timestamps = timestamps
-    
+        
+        if self.hours == True:
+        
+            # Create the time stamps for the hourly setting
+            number_blocks = 96 / (self.nhours * 4) # data points in a day / data points in the chosen hourly unit
+
+            # Repeat each element `number_blocks` times
+            repeated_timestamps = np.repeat(timestamps, number_blocks)
+            
+            # Create a sequence of numbers from 1 to `number_blocks` for each element
+            sequence = np.tile(np.arange(1, number_blocks + 1), len(timestamps))
+            
+            # Combine the repeated timestamps and sequence as strings
+            timestamps_hours = np.array([f'{timestamp}-{seq}' for timestamp, seq in zip(repeated_timestamps, sequence)])
+            self.timestamps = timestamps_hours
+        
     def outlier_detector(self):
         
         # Check if there are outliers in the data
@@ -208,22 +225,38 @@ class MSA():
     def real_outdec(self):
     
         # Read the csv file
-        data = pd.read_csv(f"data/labeled_{self.station}_pro_msa.csv", sep=',', encoding='utf-8')
+        data = pd.read_csv(f"data/labeled_{self.station}_pro.csv", sep=',', encoding='utf-8')
 
         # Convert the 'date' column to datetime type
         data['date'] = pd.to_datetime(data['date'])
-
-        # Extract the date part from the datetime and create a new column 'day'
-        data['day'] = data['date'].dt.date
-
-        # Group the data by 'day' and calculate the average of the 'label' column within each group
-        average_labels = data.groupby('day', sort=False)['label'].mean()
-
-        # Apply thresholding operation
-        average_labels = average_labels.apply(lambda x: 1 if x >= self.real_outliers_threshold else 0)
         
-        outliers_dates = average_labels[average_labels == 1].index
-        outliers_indexes = np.where(average_labels == 1)[0]
+        if self.hours == False:
+
+            # Extract the date part from the datetime and create a new column 'day'
+            data['day'] = data['date'].dt.date
+
+            # Group the data by 'day' and calculate the average of the 'label' column within each group
+            average_labels = data.groupby('day', sort=False)['label'].mean()
+
+            # Apply thresholding operation
+            average_labels = average_labels.apply(lambda x: 1 if x >= self.real_outliers_threshold else 0)
+            
+            outliers_dates = average_labels[average_labels == 1].index
+            outliers_indexes = np.where(average_labels == 1)[0]
+        
+        elif self.hours == True:
+            
+            # Create a new column 'time_block' to group dates into 6-hour intervals
+            data['time_block'] = data['date'].dt.floor('6H')
+
+            # Group the data by 'time_block' and calculate the average of the 'label' column within each group
+            average_labels = data.groupby('time_block', sort=False)['label'].mean()
+
+            # Apply thresholding operation
+            average_labels = average_labels.apply(lambda x: 1 if x >= self.real_outliers_threshold else 0)
+            
+            outliers_dates = average_labels[average_labels == 1].index
+            outliers_indexes = np.where(average_labels == 1)[0]
         
         # Return the resulting objects
         return outliers_indexes, outliers_dates
@@ -347,21 +380,22 @@ if __name__ == '__main__':
     station = 901
     
     # Create a class instance
-    msa_instance = MSA(station=station, simulation=False, search=False, projections=200, basis=48, detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.1)
+    msa_instance = MSA(station=station, hours=True, nhours=4, simulation=False, search=False, projections=200, basis=48, 
+                    detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.1)
     
     # Calculate Random Forest scores
-    msa_instance.rf()
+    # msa_instance.rf()
     
     # Calculate magnitude, shape, and amplitude
     msa_instance.call_msa()
     
-    # Get the timestamps
+    # # Get the timestamps
     msa_instance.get_timestamps()
     
-    # Detect outliers if any
+    # # Detect outliers if any
     msa_instance.outlier_detector()
     
-    # Plot the results
+    # # Plot the results
     msa_instance.plots()
     
     # Calculate accuracy
