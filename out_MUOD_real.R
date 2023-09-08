@@ -1,7 +1,9 @@
 # Get the accuracy of outliergram and muod on 901
 
-# jaccard_msa -> 0.051470588
-# accuracy_msa 41.17%>
+# jaccard_msa_days -> 0.051470588
+# accuracy_msa_days -> 41.17%
+# jaccard_msa_4hours -> 0.008293461
+# accuracy_msa_4hours -> 18.44%
 # jaccard_outliergram -> 0
 # accuracy_outliergram -> 0%
 # jaccard_muod -> 0.07561437

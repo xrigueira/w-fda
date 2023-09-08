@@ -380,8 +380,9 @@ if __name__ == '__main__':
     station = 901
     
     # Create a class instance
-    msa_instance = MSA(station=station, hours=True, nhours=4, simulation=False, search=False, projections=200, basis=48, 
-                    detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.1)
+    # nbasis days = 48; nbasis 4 hours = 8
+    msa_instance = MSA(station=station, hours=False, nhours=4, simulation=False, search=False, projections=200, basis=48, 
+                    detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.5)
     
     # Calculate Random Forest scores
     # msa_instance.rf()
