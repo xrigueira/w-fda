@@ -25,7 +25,7 @@ for day, day_data in data.groupby(data.index.date):
     # Create a new plot for each day
     fig, ax = plt.subplots()
 
-    # # Plot columns 1 to 6 for the current day
+    # Plot columns 1 to 6 for the current day
     day_data.iloc[:, 0:-1].plot(ax=ax)
 
     # Customize the plot labels, title, etc.

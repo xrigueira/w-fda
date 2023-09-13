@@ -1,6 +1,10 @@
 # This file contains the calculation of the magnitude,
 # shape, amplitude of each function in the dataset.
 
+# {roahd} https://cran.r-project.org/web/packages/roahd/index.html}
+# {roahd explained, including gen and cont models} https://journal.r-project.org/archive/2019/RJ-2019-032/RJ-2019-032.pdf
+# {fdaoutlier (muod) explained} https://link.springer.com/article/10.1007/s11634-021-00460-9 
+
 # Supress warnings
 options(warn = -1)
 

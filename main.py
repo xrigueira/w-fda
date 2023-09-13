@@ -287,16 +287,33 @@ class MSA():
 
             # Show the plot
             fig.show()
-
+            
             # Plot outliers
             fig = go.Figure(data=[go.Scatter3d(x=self.magnitude, y=self.shape, z=self.amplitude, mode='markers', 
-                                            marker=dict(color=np.where(np.isin(np.arange(len(self.magnitude)), self.index_outliers), 'red', 'black'), colorscale=[[0, 'black'], [1, 'red']], colorbar=dict(title='Outlier')),
+                                            marker=dict(color=np.where(np.isin(np.arange(len(self.magnitude)), self.index_outliers), 'red', 'black'), colorscale=[[0, 'black'], [1, 'red']]),
                                             hovertemplate='<b>Timestamp:</b> %{text}<br>'
                                             '<b>Magnitude:</b> %{x}<br>'
                                             '<b>Shape:</b> %{y}<br>'
                                             '<b>Amplitude:</b> %{z}<br>'
                                             '<b>Distance:</b> %{marker.color}<extra></extra>',
-                                            text=list(self.timestamps))])
+                                            text=list(self.timestamps),
+                                            showlegend=False)])
+            
+            # Create a dummy scatter trace for "No outliers" (black dot)
+            fig.add_trace(go.Scatter3d(
+                x=[None], y=[None], z=[None],  # Empty data, only for the legend
+                mode='markers',
+                marker=dict(color='black', size=8),  # Customize the size as needed
+                name='No outlier'
+            ))
+
+            # Create a dummy scatter trace for "Outliers" (red dot)
+            fig.add_trace(go.Scatter3d(
+                x=[None], y=[None], z=[None],  # Empty data, only for the legend
+                mode='markers',
+                marker=dict(color='red', size=8),  # Customize the size as needed
+                name='Outlier'
+            ))
 
             # Set layout options
             fig.update_layout(
@@ -305,12 +322,13 @@ class MSA():
                     yaxis=dict(title='Shape'),
                     zaxis=dict(title='Amplitude')
                 ),
-                title='Outliers MSA Plot'
+                title='Outliers MSA Plot',
+                showlegend=True
             )
 
             # Show the plot
             fig.show()
-
+            
             # Plot comparison to labeled outliers
             real_outliers_indices, real_outliers_dates = self.real_outdec()
 
@@ -326,18 +344,50 @@ class MSA():
                             else 'black'  # Non-outliers in black
                             for i in range(len(self.magnitude))
                             ],
-                        colorscale=[[0, 'blue'], [0.5, 'red'], [1, 'green']],
-                        colorbar=dict(title='Leyend')
+                        colorscale=[[0, 'blue'], [0.5, 'red'], [1, 'green']]
                     ),
                     hovertemplate='<b>Timestamp:</b> %{text}<br>'
                                 '<b>Magnitude:</b> %{x}<br>'
                                 '<b>Shape:</b> %{y}<br>'
                                 '<b>Amplitude:</b> %{z}<br>'
                                 '<b>Distance:</b> %{marker.color}<extra></extra>',
-                    text=list(self.timestamps)
+                    text=list(self.timestamps),
+                    showlegend=False
                 )
             ])
+            
+            # Create a dummy scatter trace for "No outliers" (black dot)
+            fig.add_trace(go.Scatter3d(
+                x=[None], y=[None], z=[None],  # Empty data, only for the legend
+                mode='markers',
+                marker=dict(color='black', size=8),  # Customize the size as needed
+                name='No outlier'
+            ))
 
+            # Create a dummy scatter trace for "MsA Outliers" (red dot)
+            fig.add_trace(go.Scatter3d(
+                x=[None], y=[None], z=[None],  # Empty data, only for the legend
+                mode='markers',
+                marker=dict(color='red', size=8),  # Customize the size as needed
+                name='MSA outlier'
+            ))
+            
+            # Create a dummy scatter trace for "Real outliers" (blue dot)
+            fig.add_trace(go.Scatter3d(
+                x=[None], y=[None], z=[None],  # Empty data, only for the legend
+                mode='markers',
+                marker=dict(color='blue', size=8),  # Customize the size as needed
+                name='GT outlier'
+            ))
+            
+            # Create a dummy scatter trace for "Correct detection"
+            fig.add_trace(go.Scatter3d(
+                x=[None], y=[None], z=[None],  # Empty data, only for the legend
+                mode='markers',
+                marker=dict(color='green', size=8),  # Customize the size as needed
+                name='GT and MSA outlier'
+            ))
+            
             # Set layout options
             fig.update_layout(
                 scene=dict(
@@ -345,11 +395,13 @@ class MSA():
                     yaxis=dict(title='Shape'),
                     zaxis=dict(title='Amplitude')
                 ),
-                title='Outliers MSA Plot'
+                title='Outliers MSA Plot',
+                showlegend=True
             )
 
             # Show the plot
             fig.show()
+
 
     def metric(self):
 
@@ -374,26 +426,25 @@ class MSA():
         
         return jaccard_index, accuracy
 
-
 if __name__ == '__main__':
     
     station = 901
     
     # Create a class instance
     # nbasis days = 48; nbasis 4 hours = 8
-    msa_instance = MSA(station=station, hours=False, nhours=4, simulation=False, search=False, projections=200, basis=48, 
-                    detection_threshold=15, contamination=0.1, neighbors=10, real_outliers_threshold=0.5)
+    msa_instance = MSA(station=station, hours=True, nhours=4, simulation=False, search=False, projections=200, basis=8, 
+                    detection_threshold=15, contamination=0.01, neighbors=10, real_outliers_threshold=0.5)
     
     # Calculate Random Forest scores
-    # msa_instance.rf()
+    msa_instance.rf()
     
     # Calculate magnitude, shape, and amplitude
     msa_instance.call_msa()
     
-    # # Get the timestamps
+    # Get the timestamps
     msa_instance.get_timestamps()
     
-    # # Detect outliers if any
+    # Detect outliers if any
     msa_instance.outlier_detector()
     
     # # Plot the results
