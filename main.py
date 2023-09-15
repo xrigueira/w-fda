@@ -217,6 +217,7 @@ class MSA():
             values_outliers = self.msa[index_outliers]
             timestamps_outliers = self.timestamps[index_outliers]
             self.index_outliers = index_outliers
+            np.save('y_indices_fda.npy', index_outliers, allow_pickle=False, fix_imports=False)
         
         else:
             print('No outliers found in the data.')
@@ -247,7 +248,7 @@ class MSA():
         elif self.hours == True:
             
             # Create a new column 'time_block' to group dates into 6-hour intervals
-            data['time_block'] = data['date'].dt.floor('6H')
+            data['time_block'] = data['date'].dt.floor(f'{self.nhours}H')
 
             # Group the data by 'time_block' and calculate the average of the 'label' column within each group
             average_labels = data.groupby('time_block', sort=False)['label'].mean()
@@ -402,11 +403,10 @@ class MSA():
             # Show the plot
             fig.show()
 
-
     def metric(self):
 
         real_outliers_indices, real_outliers_dates = self.real_outdec()
-        print(real_outliers_dates)
+        print('Dates of the real outliers', real_outliers_dates)
         # Create an array of outlier indices (indexkNN)
         outliers_indices = np.array(self.index_outliers)
         
@@ -432,13 +432,13 @@ if __name__ == '__main__':
     
     # Create a class instance
     # nbasis days = 48; nbasis 4 hours = 8
-    msa_instance = MSA(station=station, hours=True, nhours=4, simulation=False, search=False, projections=200, basis=8, 
-                    detection_threshold=15, contamination=0.01, neighbors=10, real_outliers_threshold=0.5)
+    msa_instance = MSA(station=station, hours=True, nhours=4, simulation=False, search=False, projections=200, basis=32,
+                    detection_threshold=15, contamination=0.04, neighbors=10, real_outliers_threshold=0.5)
     
     # Calculate Random Forest scores
-    msa_instance.rf()
+    # msa_instance.rf()
     
-    # Calculate magnitude, shape, and amplitude
+    # Calculate magnitude, shape, and amplitudec
     msa_instance.call_msa()
     
     # Get the timestamps
@@ -447,7 +447,7 @@ if __name__ == '__main__':
     # Detect outliers if any
     msa_instance.outlier_detector()
     
-    # # Plot the results
+    # Plot the results
     msa_instance.plots()
     
     # Calculate accuracy

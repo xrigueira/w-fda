@@ -124,7 +124,7 @@ builder_hours <- function(nhours, station, variables) {
             mts$data[[counter]] <- mat
             mts$time[[counter]] <- c(day(df$date[start_index]), month(df$date[start_index]), year(df$date[start_index]), timer)
 
-            if (timer != 6) {
+            if (timer != (96 / nrow)) {
                 timer <- timer + 1
             } else {
                 timer <- 1
@@ -386,7 +386,7 @@ real_outdec <- function(station) {
     # Extracts the indexes of those time frames labeles as anomalous (1) in the database. 
 
     # Read the csv file
-    data <- read.csv(paste("data/labeled_", station, "_pro_msa.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
+    data <- read.csv(paste("data/labeled_", station, "_pro.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
 
     # Convert the 'date' column to a proper date format
     data$date <- as.Date(data$date)
@@ -405,7 +405,7 @@ real_outdec <- function(station) {
     names(average_labels) <- as.character(average_label_per_day$date)
 
     # Thresholding operation: values above 0.1 set to 1, rest set to 0
-    average_labels <- ifelse(average_labels >= 0.1, 1, 0)
+    average_labels <- ifelse(average_labels >= 0.5, 1, 0)
 
     # Get the index of the days labeled as 1
     outliers_indexes <- which(average_labels == 1)
