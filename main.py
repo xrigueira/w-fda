@@ -141,7 +141,7 @@ class MSA():
             # Convert and save the result to a numpy.ndarray
             msa = np.array(msa)
             self.msa = msa # Store the result in the instance variable
-            np.save('msa.npy', msa, allow_pickle=False, fix_imports=False) # Remove then the program is finished
+            # np.save('msa.npy', msa, allow_pickle=False, fix_imports=False) # Remove then the program is finished
             
             # Apply the weights obtained with Random Forest
             # self.rf_weights = np.load('rf_weights.npy')
@@ -177,7 +177,7 @@ class MSA():
         if self.hours == True:
         
             # Create the time stamps for the hourly setting
-            number_blocks = 96 / (self.nhours * 4) # data points in a day / data points in the chosen hourly unit
+            number_blocks = 96 / (self.nhours * self.nhours) # data points in a day / data points in the chosen hourly unit
 
             # Repeat each element `number_blocks` times
             repeated_timestamps = np.repeat(timestamps, number_blocks)
@@ -217,7 +217,7 @@ class MSA():
             values_outliers = self.msa[index_outliers]
             timestamps_outliers = self.timestamps[index_outliers]
             self.index_outliers = index_outliers
-            np.save('y_indices_fda.npy', index_outliers, allow_pickle=False, fix_imports=False)
+            # np.save('y_indices_fda.npy', index_outliers, allow_pickle=False, fix_imports=False)
         
         else:
             print('No outliers found in the data.')
@@ -288,6 +288,9 @@ class MSA():
 
             # Show the plot
             fig.show()
+            
+            # Save the interactive plot as an HTML file
+            fig.write_html("distance_3Dplot.html", include_plotlyjs='cdn')
             
             # Plot outliers
             fig = go.Figure(data=[go.Scatter3d(x=self.magnitude, y=self.shape, z=self.amplitude, mode='markers', 
@@ -402,6 +405,9 @@ class MSA():
 
             # Show the plot
             fig.show()
+            
+            # Save the interactive plot as an HTML file
+            fig.write_html("labeled_3Dplot.html")
 
     def metric(self):
 
@@ -424,7 +430,21 @@ class MSA():
         # Calculate the raw accuracy score
         accuracy = intersection / len(real_outliers_indices)
         
-        return jaccard_index, accuracy
+        # Get confusion matrix
+        from sklearn.metrics import confusion_matrix
+        
+        # Get ground truth binary list
+        print(len(self.msa))
+        y_gt = np.zeros(len(self.msa))
+        y_gt[real_outliers_indices] = 1
+        
+        # Get msa binary list
+        y_msa = np.zeros(len(self.msa))
+        y_msa[outliers_indices] = 1
+        
+        confusion = confusion_matrix(y_gt, y_msa)
+        
+        return jaccard_index, accuracy, confusion
 
 if __name__ == '__main__':
     
@@ -432,8 +452,8 @@ if __name__ == '__main__':
     
     # Create a class instance
     # nbasis days = 48; nbasis 4 hours = 8
-    msa_instance = MSA(station=station, hours=True, nhours=4, simulation=False, search=False, projections=200, basis=32,
-                    detection_threshold=15, contamination=0.04, neighbors=10, real_outliers_threshold=0.5)
+    msa_instance = MSA(station=station, hours=True, nhours=4, simulation=False, search=False, projections=200, basis=8,
+                    detection_threshold=15, contamination=0.01, neighbors=10, real_outliers_threshold=0.5)
     
     # Calculate Random Forest scores
     # msa_instance.rf()
@@ -451,7 +471,8 @@ if __name__ == '__main__':
     msa_instance.plots()
     
     # Calculate accuracy
-    jaccard_index, accuracy = msa_instance.metric()
+    jaccard_index, accuracy, confusion_matrix = msa_instance.metric()
     print('Jaccard similarity index:', jaccard_index)
     print('Accuracy:', accuracy)
+    print('Confusion matrix:\n', confusion_matrix)
 
