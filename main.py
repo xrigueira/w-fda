@@ -268,7 +268,7 @@ class MSA():
 
             # Plot distance
             fig = go.Figure(data=[go.Scatter3d(x=self.magnitude, y=self.shape, z=self.amplitude, mode='markers', 
-                                            marker=dict(color=self.distances.mean(axis=1), colorscale='Viridis', colorbar=dict(title='Distance')),
+                                            marker=dict(size=4, color=self.distances.mean(axis=1), colorscale='Viridis', colorbar=dict(title='Distance')),
                                             hovertemplate='<b>Timestamp:</b> %{text}<br>'
                                             '<b>Magnitude:</b> %{x}<br>'
                                             '<b>Shape:</b> %{y}<br>'
@@ -294,7 +294,7 @@ class MSA():
             
             # Plot outliers
             fig = go.Figure(data=[go.Scatter3d(x=self.magnitude, y=self.shape, z=self.amplitude, mode='markers', 
-                                            marker=dict(color=np.where(np.isin(np.arange(len(self.magnitude)), self.index_outliers), 'red', 'black'), colorscale=[[0, 'black'], [1, 'red']]),
+                                            marker=dict(size=4,color=np.where(np.isin(np.arange(len(self.magnitude)), self.index_outliers), 'red', 'black'), colorscale=[[0, 'black'], [1, 'red']]),
                                             hovertemplate='<b>Timestamp:</b> %{text}<br>'
                                             '<b>Magnitude:</b> %{x}<br>'
                                             '<b>Shape:</b> %{y}<br>'
@@ -342,6 +342,7 @@ class MSA():
             # Plot outliers
             fig = go.Figure(data=[go.Scatter3d(x=self.magnitude, y=self.shape, z=self.amplitude, mode='markers',
                     marker=dict(
+                        size=4,
                         color=['green' if i in real_outliers_indices and i in outliers_indices
                             else 'blue' if i in real_outliers_indices
                             else 'red' if i in outliers_indices
