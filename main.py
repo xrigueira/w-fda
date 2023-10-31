@@ -177,7 +177,7 @@ class MSA():
         if self.hours == True:
         
             # Create the time stamps for the hourly setting
-            number_blocks = 96 / (self.nhours * self.nhours) # data points in a day / data points in the chosen hourly unit
+            number_blocks = 96 / (self.nhours * 4) # data points in a day / data points in the chosen hourly unit
 
             # Repeat each element `number_blocks` times
             repeated_timestamps = np.repeat(timestamps, number_blocks)
