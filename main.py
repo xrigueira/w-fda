@@ -1,5 +1,3 @@
-# Novelty: amplitude, non parametric detector, GANs for the generation of artificial WQ data.
-
 import csv
 import numpy as np
 import pandas as pd
@@ -136,7 +134,7 @@ class MSA():
 
             # Execute the R function get_msa()
             robjects.r(r_code)
-            msa = robjects.r['get_msa'](self.hours, self.nhours, self.simulation, self.projections, self.basis)
+            msa = robjects.r['get_msa'](self.station, self.hours, self.nhours, self.simulation, self.projections, self.basis)
 
             # Convert and save the result to a numpy.ndarray
             msa = np.array(msa)
@@ -290,7 +288,7 @@ class MSA():
             fig.show()
             
             # Save the interactive plot as an HTML file
-            fig.write_html("distance_3Dplot.html", include_plotlyjs='cdn')
+            fig.write_html(f"results/distance_3Dplot_{self.station}.html", include_plotlyjs='cdn')
             
             # Plot outliers
             fig = go.Figure(data=[go.Scatter3d(x=self.magnitude, y=self.shape, z=self.amplitude, mode='markers', 
@@ -408,7 +406,7 @@ class MSA():
             fig.show()
             
             # Save the interactive plot as an HTML file
-            fig.write_html("labeled_3Dplot.html")
+            fig.write_html(f"results/labeled_3Dplot_{self.station}.html")
 
     def metric(self):
 
@@ -419,6 +417,8 @@ class MSA():
         
         print('Indices of the real outleirs', real_outliers_indices)
         print('Indices of the outliers detected', outliers_indices)
+        # np.save(f'indices_y_real_outliers_{self.station}.npy', real_outliers_indices, allow_pickle=False, fix_imports=False)
+        # np.save(f'indices_y_msa_{self.station}.npy', outliers_indices, allow_pickle=False, fix_imports=False)
         
         real_outliers_indices_set = set(real_outliers_indices.tolist()) # Convert to list and then to set
         outliers_indices_set = set(np.ravel(outliers_indices).tolist()) # Make 1D, convert to list and then to set
@@ -449,7 +449,7 @@ class MSA():
 
 if __name__ == '__main__':
     
-    station = 901
+    station = 910
     
     # Create a class instance
     # nbasis days = 48; nbasis 4 hours = 8

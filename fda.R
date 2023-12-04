@@ -309,7 +309,7 @@ get_magnitude_shape <- function(mts, projections) {
 
 }
 
-get_msa <- function(hours, nhours, simulation, projections, basis) {
+get_msa <- function(station, hours, nhours, simulation, projections, basis) {
 
     # This function combines 'builder', 'get_amplitude',  'get_magnitude_shape'
     # and 'real_outdec' to extract the msa score of a functional object and
@@ -321,7 +321,6 @@ get_msa <- function(hours, nhours, simulation, projections, basis) {
     # Define the variables for the desired time units
     time_frame <- "c" # "a" for months, "b" for weeks, "c" for days
     time_step <- "15 min"
-    station <- "901"
     variables <- c(paste("ammonium_", station, sep = ""),
                     paste("conductivity_", station, sep = ""),
                     paste("dissolved_oxygen_", station, sep = ""),
