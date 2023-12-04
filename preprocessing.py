@@ -8,10 +8,10 @@ from filterer import mfilterer
 """Preprocessing starts from the original univariate txt files."""
 
 # Define the data we want to study
-files = [f for f in os.listdir("data") if os.path.isfile(os.path.join("data", f))]
+files = [f for f in os.listdir("raw_data") if os.path.isfile(os.path.join("raw_data", f))]
 
 varNames = [i[0:-4] for i in files] # extract the names of the variables
-stations = [901, 902, 904, 905, 906, 907, 910, 916] # Define with stations to process
+stations = [901, 902, 905, 906, 907, 910] # Define with stations to process
 
 # Define the time dram we want to use (a: months (not recommended), b: weeks, c: days). 
 timeFrame = 'c'
@@ -19,21 +19,21 @@ timeStep = '15 min'
 
 if __name__ == '__main__':
 
-    # for varName in varNames:
+    for varName in varNames:
 
-    #     # Fill in the gaps in the time series
-    #     checkGaps(File=f'{varName}.txt', timestep=timeStep, varname=varName)
-    #     print('[INFO] checkGaps() DONE')
+        # Fill in the gaps in the time series
+        checkGaps(File=f'{varName}.txt', timestep=timeStep, varname=varName)
+        print('[INFO] checkGaps() DONE')
 
-    #     # Normalize the data. See normalizer.py for details
-    #     normalizer(File=f'{varName}_full.csv', timeframe=timeFrame, timestep=timeStep, varname=varName)
-    #     print('[INFO] normalizer() DONE')
+        # Normalize the data. See normalizer.py for details
+        normalizer(File=f'{varName}_full.csv', timeframe=timeFrame, timestep=timeStep, varname=varName)
+        print('[INFO] normalizer() DONE')
     
-    # for station in stations:
+    for station in stations:
     
-    #     # Join the normalized databases
-    #     joiner(station=station)
-    #     print('[INFO] joiner() DONE')
+        # Join the normalized databases
+        joiner(station=station)
+        print('[INFO] joiner() DONE')
     
     # RUN labeler.py MANUALLY. <- Fix this whenever I have some time
     

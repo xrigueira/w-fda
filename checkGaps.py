@@ -12,11 +12,11 @@ def checkGaps(File, timestep, varname):
     fileName, fileExtension = os.path.splitext(File)
 
     if timestep == '15 min':
-        df = pd.read_csv(f'data/{fileName}.txt', delimiter=';', parse_dates=['Date'], date_format='%d-%m-%Y %H:%M:%S', index_col=['Date'])
+        df = pd.read_csv(f'raw_data/{fileName}.txt', delimiter=';', parse_dates=['Date'], date_format='%d-%m-%Y %H:%M:%S', index_col=['Date'])
         frequency = '15min'
 
     elif timestep == '1 day':
-        df = pd.read_csv(f'data/{fileName}.csv', delimiter=';', parse_dates=['Date'], date_format='%d-%m-%Y', index_col=['Date'])
+        df = pd.read_csv(f'raw_data/{fileName}.csv', delimiter=';', parse_dates=['Date'], date_format='%d-%m-%Y', index_col=['Date'])
         frequency = 'D'
 
     # Remove the index duplication
