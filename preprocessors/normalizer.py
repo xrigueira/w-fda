@@ -418,7 +418,7 @@ def normalizer(File, timeframe, timestep, varname):
             elif i >= mondayIndex:
                 
                 if df['week'][i] != df['week'][i-1]:
-                    if (i+7) < len(df['week']):
+                    if (i+7) <= len(df['week']):
                         year, month, day = 'year', 'month', 'day' # Needed to avoid a syntax error
                         dateE = f'{df[year][i+6]} {df[month][i+6]} {df[day][i+6]}'
                         endDate.append(dateE)
