@@ -7,7 +7,7 @@ file"""
 def joiner(station):
     
     # List all csv files in /data
-    csv_files = glob.glob(f'data/*{station}_nor.csv')
+    csv_files = glob.glob(f'data/*{station}_fil.csv')
     
     # Initialize an empty dataframe to store the merged data
     merged_df = pd.read_csv(csv_files[0], sep=',')

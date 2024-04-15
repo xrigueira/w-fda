@@ -1,9 +1,5 @@
 # Ingnore the venv
 venv
 
-# Ignore the images
-images
-images_gaps
-
-# Ignore the data
-data
+# # Ignore the data
+# data
