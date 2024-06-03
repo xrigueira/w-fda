@@ -12,7 +12,7 @@
 source("fda.R")
 
 # Read the data
-station <- "910"
+station <- "901"
 
 # Read the csv file
 df <- read.csv(paste("data/labeled_", station, "_pro.csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)
