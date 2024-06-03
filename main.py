@@ -454,7 +454,7 @@ if __name__ == '__main__':
     # Create a class instance
     # nbasis days = 48; nbasis 4 hours = 8
     msa_instance = MSA(station=station, hours=True, nhours=4, simulation=False, search=False, projections=200, basis=8,
-                    detection_threshold=15, contamination=0.30, neighbors=10, real_outliers_threshold=0.5)
+                    detection_threshold=15, contamination=0.05, neighbors=10, real_outliers_threshold=0.5)
     # Original values: detection_threshold=15, contamination=0.01, neighbors=10, real_outliers_threshold=0.5)
     
     # Calculate Random Forest scores
