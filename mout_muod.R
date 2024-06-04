@@ -1,13 +1,4 @@
-# Get the accuracy of outliergram and muod on 901
-
-# jaccard_msa_days -> 0.051470588
-# accuracy_msa_days -> 41.17%
-# jaccard_msa_4hours -> 0.008293461
-# accuracy_msa_4hours -> 18.44%
-# jaccard_outliergram -> 0
-# accuracy_outliergram -> 0%
-# jaccard_muod -> 0.07561437
-# accuracy_muod -> 58.82%
+# This file contains the code to run the MOUT and MUOD algorithms on the data of station 901
 
 source("fda.R")
 
@@ -20,9 +11,9 @@ df <- read.csv(paste("data/labeled_", station, "_pro.csv", sep = ""), header = T
 # Select the columns with variables
 df <- df[, 2:7]
 
-## Reshape data before feeding it into the outliergram
-# Calculate the number of days
-num_days <- nrow(df) / 16
+
+# Reshape data before feeding it into MOUT
+num_days <- nrow(df) / 16 # Calculate the number of days
 
 # Create a list to hold the matrices
 matrix_list <- list()
@@ -36,6 +27,7 @@ for (col_index in 1:6) {
 
 }
 
+# Implement MOUT
 outliers_outliergram <- my_outliergram(P = 16, matrix_list)
 print(outliers_outliergram)
 
