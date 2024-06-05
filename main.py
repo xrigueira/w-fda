@@ -119,7 +119,7 @@ class MSA():
         self.rf_weights = rf_weights
         
     def call_msa(self):
-        """Write documentation.
+        """Turn the data into functions and calculate the magnitude, shape, amplitude of each function.
         ----------
         Arguments:
         self.
@@ -223,8 +223,10 @@ class MSA():
             print('No outliers found in the data.')
             self.index_outliers = tuple()
     
-    def real_outdec(self):
+    def real_outliers(self):
     
+        """Get the indices and dates of the real outliers in the data."""
+
         # Read the csv file
         data = pd.read_csv(f"data/labeled_{self.station}_pro.csv", sep=',', encoding='utf-8')
 
@@ -247,7 +249,7 @@ class MSA():
         
         elif self.hours == True:
             
-            # Create a new column 'time_block' to group dates into 6-hour intervals
+            # Create a new column 'time_block' to group dates into 4-hour intervals
             data['time_block'] = data['date'].dt.floor(f'{self.nhours}H')
 
             # Group the data by 'time_block' and calculate the average of the 'label' column within each group
@@ -255,15 +257,62 @@ class MSA():
 
             # Apply thresholding operation
             average_labels = average_labels.apply(lambda x: 1 if x >= self.real_outliers_threshold else 0)
-            
+
             outliers_dates = average_labels[average_labels == 1].index
             outliers_indexes = np.where(average_labels == 1)[0]
         
         # Return the resulting objects
         return outliers_indexes, outliers_dates
+    
+    def detected_outliers(self):
+
+        """Get the indices and dates of the outliers detected by the MSA method."""
+
+        if self.outliers_in_data == True:
+
+            # Read the csv file
+            data = pd.read_csv(f"data/labeled_{self.station}_pro.csv", sep=',', encoding='utf-8')
+
+            # Convert the 'date' column to datetime type
+            data['date'] = pd.to_datetime(data['date'])
+        
+            if self.hours == False:
+
+                # Extract the date part from the datetime and create a new column 'day'
+                data['day'] = data['date'].dt.date
+
+                # Group by day
+                data_grouped = data.groupby('day', sort=False)['week'].first()
+
+                # Get the outliers detected by the MSA method
+                outliers_indixes = self.index_outliers
+                
+                # Get the dates of the outliers detected by the MSA method
+                outliers_dates = data_grouped.iloc[outliers_indixes].index
+        
+            elif self.hours == True:
+            
+                # Create a new column 'time_block' to group dates into 4-hour intervals
+                data['time_block'] = data['date'].dt.floor(f'{self.nhours}H')
+
+                # Group the data by 'time_block' and apply some function (e.g., 'first') to turn it back into a DataFrame
+                data_grouped = data.groupby('time_block', sort=False)['week'].first()
+                
+                # Get the outliers detected by the MSA method
+                outliers_indixes =  self.index_outliers
+                
+                # Get the dates (index) of the outliers detected by the MSA method
+                outliers_dates = data_grouped.iloc[outliers_indixes].index
+            
+            return outliers_indixes, outliers_dates
+        
+        else:
+            return None, None
 
     def plots(self):
         
+        """Plot the results of the MSA method."""
+
         if self.outliers_in_data == True:
 
             # Plot distance
@@ -334,7 +383,7 @@ class MSA():
             fig.show()
             
             # Plot comparison to labeled outliers
-            real_outliers_indices, real_outliers_dates = self.real_outdec()
+            real_outliers_indices, real_outliers_dates = self.real_outliers()
 
             # Create an array of outlier indices (indexkNN)
             outliers_indices = np.array(self.index_outliers)
@@ -412,7 +461,9 @@ class MSA():
 
     def metric(self):
 
-        real_outliers_indices, real_outliers_dates = self.real_outdec()
+        """Calculate the accuracy of the MSA method."""
+
+        real_outliers_indices, real_outliers_dates = self.real_outliers()
         print('Dates of the real outliers', real_outliers_dates)
         # Create an array of outlier indices (indexkNN)
         outliers_indices = np.array(self.index_outliers)
@@ -422,20 +473,6 @@ class MSA():
         # np.save(f'indices_y_real_outliers_{self.station}.npy', real_outliers_indices, allow_pickle=False, fix_imports=False)
         # np.save(f'indices_y_msa_{self.station}.npy', outliers_indices, allow_pickle=False, fix_imports=False)
         
-        real_outliers_indices_set = set(real_outliers_indices.tolist()) # Convert to list and then to set
-        outliers_indices_set = set(np.ravel(outliers_indices).tolist()) # Make 1D, convert to list and then to set
-        intersection = len(real_outliers_indices_set.intersection(outliers_indices_set))
-        union = len(real_outliers_indices_set.union(outliers_indices_set))
-        
-        # Calculate the Jaccard similarity index
-        jaccard_index = intersection / union if union > 0 else 1.0
-        
-        # Calculate the raw accuracy score
-        accuracy = intersection / len(real_outliers_indices)
-        
-        # Get confusion matrix
-        from sklearn.metrics import confusion_matrix
-        
         # Get ground truth binary list
         print(len(self.msa))
         y_gt = np.zeros(len(self.msa))
@@ -444,10 +481,49 @@ class MSA():
         # Get msa binary list
         y_msa = np.zeros(len(self.msa))
         y_msa[outliers_indices] = 1
+
+        # Get accuracy
+        accuracy = np.sum(y_gt == y_msa) / len(y_gt)
         
+        # Get confusion matrix
+        from sklearn.metrics import confusion_matrix
         confusion = confusion_matrix(y_gt, y_msa)
         
-        return jaccard_index, accuracy, confusion
+        return accuracy, confusion
+    
+    def cleanser(self):
+
+        """Remove the dates that have been correctly detected by the MSA method
+        from the labeled data file."""
+
+        # Get the indices and dates of the outliers detected by the MSA method
+        detected_outliers_indices, detected_outliers_dates = self.detected_outliers()
+
+        # Get the indices and dates of the real outliers in the data
+        real_outliers_indices, real_outliers_dates = self.real_outliers()
+
+        # Extract those instances present in real outliers but not in detected outliers
+        dates_to_remove = real_outliers_dates.difference(detected_outliers_dates)
+        print('Dates to remove', dates_to_remove)
+        print('Number of dates to remove', len(dates_to_remove))
+
+        # Read the labeled data file
+        data = pd.read_csv(f"data/labeled_{self.station}_pro.csv", sep=',', encoding='utf-8')
+
+        # Convert the 'date' column to datetime type
+        data['date'] = pd.to_datetime(data['date'])
+
+        # Create a new list of dates that includes the original dates and the dates 4 hours ahead
+        from pandas.tseries.offsets import DateOffset
+        dates_to_remove = dates_to_remove.union(dates_to_remove + DateOffset(hours=4))
+
+        # Assume 'data' is your DataFrame and 'date' is the column with the dates
+        mask = data['date'].isin(dates_to_remove)
+
+        # Remove the dates
+        data = data[~mask]
+
+
 
 if __name__ == '__main__':
     
@@ -477,8 +553,10 @@ if __name__ == '__main__':
     # msa_instance.plots()
     
     # Calculate accuracy
-    jaccard_index, accuracy, confusion_matrix = msa_instance.metric()
-    print('Jaccard similarity index:', jaccard_index)
+    accuracy, confusion_matrix = msa_instance.metric()
     print('Accuracy:', accuracy)
     print('Confusion matrix:\n', confusion_matrix)
+
+    # Clean the data
+    msa_instance.cleanser()
 

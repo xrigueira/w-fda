@@ -365,7 +365,7 @@ get_msa <- function(station, hours, nhours, simulation, projections, basis) {
         # Extract the real outliers to check the results
         real_outliers <- real_outdec(station)
         print("[INFO] ground truth outliers extracted")
-        print(real_outliers)
+        # print(real_outliers)
 
     }
 
