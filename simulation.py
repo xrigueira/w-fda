@@ -126,44 +126,42 @@ class simulator(MSA):
     
     def metric(self):
         
-        # Retrive results and turn into sets
-        outliers_outliergram = set(list(self.outliers_outliergram))
-        outliers_muod = set(list(self.outliers_muod))
-        print(list(self.outliers_ms))
-        outliers_ms = set(list(self.outliers_ms))
+        # Retrive results
+        outliers_outliergram = list(self.outliers_outliergram)
+        outliers_muod = list(self.outliers_muod)
+        outliers_ms = list(self.outliers_ms)
+        
         if len(self.index_outliers) == 0:
             outliers_msa = []
         else:
-            outliers_msa = set([num + 1 for num in list(self.index_outliers[0])])
-        real_outliers = set(self.real_outliers)
+            outliers_msa = list([num + 1 for num in list(self.index_outliers[0])])
         
-        # Calculate the length of each intersection and union
-        intersection_outliergram = len(real_outliers.intersection(outliers_outliergram))
-        union_outliergram = len(real_outliers.union(outliers_outliergram))
-        intersection_muod = len(real_outliers.intersection(outliers_muod))
-        union_muod = len(real_outliers.union(outliers_muod))
-        intersection_ms = len(real_outliers.intersection(outliers_ms))
-        union_ms = len(real_outliers.union(outliers_ms))
-        intersection_msa = len(real_outliers.intersection(outliers_msa))
-        union_msa = len(real_outliers.union(outliers_msa))
+        real_outliers = self.real_outliers
 
-        # Calculate the raw accuracy score for each method
-        accuracy_outliergram = intersection_outliergram / len(real_outliers)
-        accuracy_muod = intersection_muod / len(real_outliers)
-        accuracy_ms = intersection_ms / len(real_outliers)
-        accuracy_msa =intersection_msa / len(real_outliers)
+        # Convert the results to binary lists of len 210 (N+10)
+        outliers_outliergram = [1 if i in outliers_outliergram else 0 for i in range(1, self.N + 11)]
+        outliers_muod = [1 if i in outliers_muod else 0 for i in range(1, self.N + 11)]
+        outliers_ms = [1 if i in outliers_ms else 0 for i in range(1, self.N + 11)]
+        outliers_msa = [1 if i in outliers_msa else 0 for i in range(1, self.N + 11)]
+        real_outliers = [1 if i in real_outliers else 0 for i in range(1, self.N + 11)]
+
+        # Calculate the accuracy score for each method
+        accuracy_outliergram = sum([1 if outliers_outliergram[i] == real_outliers[i] else 0 for i in range(len(outliers_outliergram))]) / len(real_outliers)
+        accuracy_muod = sum([1 if outliers_muod[i] == real_outliers[i] else 0 for i in range(len(outliers_muod))]) / len(real_outliers)
+        accuracy_ms = sum([1 if outliers_ms[i] == real_outliers[i] else 0 for i in range(len(outliers_ms))]) / len(real_outliers)
+        accuracy_msa = sum([1 if outliers_msa[i] == real_outliers[i] else 0 for i in range(len(outliers_msa))]) / len(real_outliers)
 
         # Calculate the precision score for each method
-        precision_outliergram = intersection_outliergram / len(real_outliers)
-        precision_muod = intersection_muod / len(real_outliers)
-        precision_ms = intersection_ms / len(real_outliers)
-        precision_msa = intersection_msa / len(real_outliers)
+        precision_outliergram = sum([1 if outliers_outliergram[i] == real_outliers[i] else 0 for i in range(len(outliers_outliergram))]) / len(real_outliers)
+        precision_muod = sum([1 if outliers_muod[i] == real_outliers[i] else 0 for i in range(len(outliers_muod))]) / len(real_outliers)
+        precision_ms = sum([1 if outliers_ms[i] == real_outliers[i] else 0 for i in range(len(outliers_ms))]) / len(real_outliers)
+        precision_msa = sum([1 if outliers_msa[i] == real_outliers[i] else 0 for i in range(len(outliers_msa))]) / len(real_outliers)
 
         # Calculate the recall score for each method
-        recall_outliergram = intersection_outliergram / len(outliers_outliergram)
-        recall_muod = intersection_muod / len(outliers_muod)
-        recall_ms = intersection_ms / len(outliers_ms)
-        recall_msa = intersection_msa / len(outliers_msa)
+        recall_outliergram = sum([1 if outliers_outliergram[i] == real_outliers[i] else 0 for i in range(len(outliers_outliergram))]) / len(outliers_outliergram)
+        recall_muod = sum([1 if outliers_muod[i] == real_outliers[i] else 0 for i in range(len(outliers_muod))]) / len(outliers_muod)
+        recall_ms = sum([1 if outliers_ms[i] == real_outliers[i] else 0 for i in range(len(outliers_ms))]) / len(outliers_ms)
+        recall_msa = sum([1 if outliers_msa[i] == real_outliers[i] else 0 for i in range(len(outliers_msa))]) / len(outliers_msa)
 
         # Calculate the F1 score for each method
         f1_outliergram = 2 * (precision_outliergram * recall_outliergram) / (precision_outliergram + recall_outliergram)
@@ -172,26 +170,64 @@ class simulator(MSA):
         f1_msa = 2 * (precision_msa * recall_msa) / (precision_msa + recall_msa)
 
         # Calculate the error rate
-        error_rate_outliergram = 1 - len(outliers_outliergram.difference(real_outliers)) / len(real_outliers)
-        error_rate_muod = 1 - len(outliers_muod.difference(real_outliers)) / len(real_outliers)
-        error_rate_accuracy_ms = 1 - len(outliers_ms.difference(real_outliers)) / len(real_outliers)
-        error_rate_accuracy_msa = 1 - len(outliers_msa.difference(real_outliers)) / len(real_outliers)
+        error_rate_outliergram = 1 - sum([1 if outliers_outliergram[i] == real_outliers[i] else 0 for i in range(len(outliers_outliergram))]) / len(real_outliers)
+        error_rate_muod = 1 - sum([1 if outliers_muod[i] == real_outliers[i] else 0 for i in range(len(outliers_muod))]) / len(real_outliers)
+        error_rate_accuracy_ms = 1 - sum([1 if outliers_ms[i] == real_outliers[i] else 0 for i in range(len(outliers_ms))]) / len(real_outliers)
+        error_rate_accuracy_msa = 1 - sum([1 if outliers_msa[i] == real_outliers[i] else 0 for i in range(len(outliers_msa))]) / len(real_outliers)
 
-        # Calculate the length of each intersection and union
-        intersection_outliergram = len(real_outliers.intersection(outliers_outliergram))
-        union_outliergram = len(real_outliers.union(outliers_outliergram))
-        intersection_muod = len(real_outliers.intersection(outliers_muod))
-        union_muod = len(real_outliers.union(outliers_muod))
-        intersection_ms = len(real_outliers.intersection(outliers_ms))
-        union_ms = len(real_outliers.union(outliers_ms))
-        intersection_msa = len(real_outliers.intersection(outliers_msa))
-        union_msa = len(real_outliers.union(outliers_msa))
-        
-        # Get the Jaccard similarity indix for each method
+        # Calculate the Jaccard similarity index
+        intersection_outliergram = len(set(outliers_outliergram).intersection(set(real_outliers)))
+        union_outliergram = len(set(outliers_outliergram).union(set(real_outliers)))
         jaccard_index_outliergram = intersection_outliergram / union_outliergram if union_outliergram > 0 else 1.0
+        
+        intersection_muod = len(set(outliers_muod).intersection(set(real_outliers)))
+        union_muod = len(set(outliers_muod).union(set(real_outliers)))
         jaccard_index_muod = intersection_muod / union_muod if union_muod > 0 else 1.0
+
+        intersection_ms = len(set(outliers_ms).intersection(set(real_outliers)))
+        union_ms = len(set(outliers_ms).union(set(real_outliers)))
         jaccard_index_ms = intersection_ms / union_ms if union_ms > 0 else 1.0
+
+        intersection_msa = len(set(outliers_msa).intersection(set(real_outliers)))
+        union_msa = len(set(outliers_msa).union(set(real_outliers)))
         jaccard_index_msa = intersection_msa / union_msa if union_msa > 0 else 1.0
+        
+        # # Retrive results and turn into sets
+        # outliers_outliergram = set(list(self.outliers_outliergram))
+        # outliers_muod = set(list(self.outliers_muod))
+        # print(list(self.outliers_ms))
+        # outliers_ms = set(list(self.outliers_ms))
+        # if len(self.index_outliers) == 0:
+        #     outliers_msa = []
+        # else:
+        #     outliers_msa = set([num + 1 for num in list(self.index_outliers[0])])
+        # real_outliers = set(self.real_outliers)
+        
+        # # Calculate the length of each intersection and union
+        # intersection_outliergram = len(real_outliers.intersection(outliers_outliergram))
+        # union_outliergram = len(real_outliers.union(outliers_outliergram))
+        # intersection_muod = len(real_outliers.intersection(outliers_muod))
+        # union_muod = len(real_outliers.union(outliers_muod))
+        # intersection_ms = len(real_outliers.intersection(outliers_ms))
+        # union_ms = len(real_outliers.union(outliers_ms))
+        # intersection_msa = len(real_outliers.intersection(outliers_msa))
+        # union_msa = len(real_outliers.union(outliers_msa))
+
+        # # Calculate the length of each intersection and union
+        # intersection_outliergram = len(real_outliers.intersection(outliers_outliergram))
+        # union_outliergram = len(real_outliers.union(outliers_outliergram))
+        # intersection_muod = len(real_outliers.intersection(outliers_muod))
+        # union_muod = len(real_outliers.union(outliers_muod))
+        # intersection_ms = len(real_outliers.intersection(outliers_ms))
+        # union_ms = len(real_outliers.union(outliers_ms))
+        # intersection_msa = len(real_outliers.intersection(outliers_msa))
+        # union_msa = len(real_outliers.union(outliers_msa))
+        
+        # # Get the Jaccard similarity indix for each method
+        # jaccard_index_outliergram = intersection_outliergram / union_outliergram if union_outliergram > 0 else 1.0
+        # jaccard_index_muod = intersection_muod / union_muod if union_muod > 0 else 1.0
+        # jaccard_index_ms = intersection_ms / union_ms if union_ms > 0 else 1.0
+        # jaccard_index_msa = intersection_msa / union_msa if union_msa > 0 else 1.0
         
         results = {'accuracy_outliergram': accuracy_outliergram,
                     'accuracy_muod': accuracy_muod,
@@ -246,7 +282,7 @@ if __name__ == '__main__':
     
     for contamination in contaminations:
         
-        for i in range(2):
+        for i in range(100):
             
             # Set up timer
             start = time.time()
@@ -338,9 +374,9 @@ if __name__ == '__main__':
         jaccard_outliergram, jaccard_muod, jaccard_ms, jaccard_msa = [], [], [], []
     
     # Save the results
-    df_accuracy.to_csv('accuracy.csv', sep=',', encoding='utf-8', index=True)
-    df_precision.to_csv('precision.csv', sep=',', encoding='utf-8', index=True)
-    df_recall.to_csv('recall.csv', sep=',', encoding='utf-8', index=True)
-    df_f1.to_csv('f1.csv', sep=',', encoding='utf-8', index=True)
-    df_error_rate.to_csv('error_rate.csv', sep=',', encoding='utf-8', index=True)
-    df_jaccard.to_csv('jaccard.csv', sep=',', encoding='utf-8', index=True)
+    df_accuracy.to_csv('results/accuracy.csv', sep=',', encoding='utf-8', index=True)
+    df_precision.to_csv('results/precision.csv', sep=',', encoding='utf-8', index=True)
+    df_recall.to_csv('results/recall.csv', sep=',', encoding='utf-8', index=True)
+    df_f1.to_csv('results/f1.csv', sep=',', encoding='utf-8', index=True)
+    df_error_rate.to_csv('results/error_rate.csv', sep=',', encoding='utf-8', index=True)
+    df_jaccard.to_csv('results/jaccard.csv', sep=',', encoding='utf-8', index=True)
