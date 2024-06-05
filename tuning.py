@@ -165,7 +165,7 @@ class MSA():
             fig.show()
 
             # Plot comparison to labeled outliers
-            from real_outdec import real_outdec
+            from main import real_outdec
 
             real_outliers_indices = real_outdec(station=901, real_outlier_threshold=self.real_outliers_threshold)
 
@@ -208,7 +208,7 @@ class MSA():
 
     def metric(self):
         
-        from real_outdec import real_outdec
+        from main import real_outdec
 
         real_outliers_indices = real_outdec(station=901, real_outlier_threshold=self.real_outliers_threshold)
 
