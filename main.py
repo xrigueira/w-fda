@@ -33,6 +33,8 @@ class MSA():
 
     def rf(self):
         
+        """Use RF to enhance the MSA method (not used)."""
+
         # Read the data
         data = pd.read_csv(f'data/labeled_{self.station}_pro.csv', sep=',', encoding='utf-8')
 
@@ -456,6 +458,8 @@ if __name__ == '__main__':
     msa_instance = MSA(station=station, hours=True, nhours=4, simulation=False, search=False, projections=200, basis=8,
                     detection_threshold=15, contamination=0.15, neighbors=160, real_outliers_threshold=0.5)
     # Original values: detection_threshold=15, contamination=0.01, neighbors=10, real_outliers_threshold=0.5)
+    # Best combo: detection_threshold=15, contamination=0.15, neighbors=160, real_outliers_threshold=0.5 || accuracy 60%
+    # Good combo with less FN: detection_threshold=15, contamination=0.10, neighbors=300, real_outliers_threshold=0.5 || accuracy 56%
     
     # Calculate Random Forest scores
     # msa_instance.rf()

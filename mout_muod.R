@@ -1,4 +1,4 @@
-# This file contains the code to run the MOUT and MUOD algorithms on the data of station 901
+# This file contains the code to run the MOUT and MUOD algorithms on the data of a given station
 
 source("fda.R")
 
