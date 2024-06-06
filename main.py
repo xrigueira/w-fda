@@ -503,26 +503,34 @@ class MSA():
         real_outliers_indices, real_outliers_dates = self.real_outliers()
 
         # Extract those instances present in real outliers but not in detected outliers
-        dates_to_remove = real_outliers_dates.difference(detected_outliers_dates)
-        print('Dates to remove', dates_to_remove)
-        print('Number of dates to remove', len(dates_to_remove))
+        # This object contains the first item of the 4-hour windows to be remoevd
+        dates_to_remove = real_outliers_dates.difference(detected_outliers_dates)  
 
         # Read the labeled data file
         data = pd.read_csv(f"data/labeled_{self.station}_pro.csv", sep=',', encoding='utf-8')
 
         # Convert the 'date' column to datetime type
         data['date'] = pd.to_datetime(data['date'])
+        
+        # Create an empty list to store all the dates to be removed
+        dates_to_remove_complete = []
 
-        # Create a new list of dates that includes the original dates and the dates 4 hours ahead
-        from pandas.tseries.offsets import DateOffset
-        dates_to_remove = dates_to_remove.union(dates_to_remove + DateOffset(hours=4))
+        # Loop over each date in the original list
+        for date in dates_to_remove:
+            # For each date, generate all 15-minute intervals within the next 4 hours and add them to the list
+            dates_to_remove_complete.extend(pd.date_range(start=date, end=date+pd.Timedelta(hours=4)-pd.Timedelta(minutes=15), freq='15min'))
 
-        # Assume 'data' is your DataFrame and 'date' is the column with the dates
-        mask = data['date'].isin(dates_to_remove)
+        # Convert the list to a DatetimeIndex
+        dates_to_remove_complete = pd.DatetimeIndex(dates_to_remove_complete)
+
+        # Define a mask to filter the data
+        mask = data['date'].isin(dates_to_remove_complete)
 
         # Remove the dates
         data = data[~mask]
 
+        # Save the cleaned data
+        data.to_csv(f'clean_data/labeled_{station}_pro.csv', index=False)
 
 
 if __name__ == '__main__':
