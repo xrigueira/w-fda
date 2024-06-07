@@ -115,7 +115,6 @@ class MSA():
 
         # Get the average if each group
         rf_weights = np.mean(grouped_y_hat, axis=1)
-        # np.save('rf_weights.npy', rf_weights, allow_pickle=False, fix_imports=False) # Remove when the program is finixed
         self.rf_weights = rf_weights
         
     def call_msa(self):
@@ -141,7 +140,6 @@ class MSA():
             # Convert and save the result to a numpy.ndarray
             msa = np.array(msa)
             self.msa = msa # Store the result in the instance variable
-            # np.save('msa.npy', msa, allow_pickle=False, fix_imports=False) # Remove then the program is finished
             
             # Apply the weights obtained with Random Forest
             # self.rf_weights = np.load('rf_weights.npy')
@@ -217,7 +215,6 @@ class MSA():
             values_outliers = self.msa[index_outliers]
             timestamps_outliers = self.timestamps[index_outliers]
             self.index_outliers = index_outliers
-            # np.save('y_indices_fda.npy', index_outliers, allow_pickle=False, fix_imports=False)
         
         else:
             print('No outliers found in the data.')
@@ -461,26 +458,26 @@ class MSA():
 
     def metric(self):
 
-        """Calculate the accuracy of the MSA method."""
+        """Calculate the accuracy and the confusion matrix of the MSA method."""
 
         real_outliers_indices, real_outliers_dates = self.real_outliers()
         print('Dates of the real outliers', real_outliers_dates)
+        print('Indices of the real outleirs', real_outliers_indices)
+        
         # Create an array of outlier indices (indexkNN)
         outliers_indices = np.array(self.index_outliers)
-        
-        print('Indices of the real outleirs', real_outliers_indices)
         print('Indices of the outliers detected', outliers_indices)
-        # np.save(f'indices_y_real_outliers_{self.station}.npy', real_outliers_indices, allow_pickle=False, fix_imports=False)
-        # np.save(f'indices_y_msa_{self.station}.npy', outliers_indices, allow_pickle=False, fix_imports=False)
         
         # Get ground truth binary list
-        print(len(self.msa))
+        print('Total number of samples', len(self.msa))
         y_gt = np.zeros(len(self.msa))
         y_gt[real_outliers_indices] = 1
+        # np.save('y_gt.npy', y_gt, allow_pickle=False, fix_imports=False)
         
         # Get msa binary list
         y_msa = np.zeros(len(self.msa))
         y_msa[outliers_indices] = 1
+        # np.save('y_msa.npy', y_msa, allow_pickle=False, fix_imports=False)
 
         # Get accuracy
         accuracy = np.sum(y_gt == y_msa) / len(y_gt)
@@ -538,14 +535,13 @@ if __name__ == '__main__':
     station = 901
     
     # Create a class instance
-    # nbasis days = 48; nbasis 4 hours = 8
     msa_instance = MSA(station=station, hours=True, nhours=8, simulation=False, search=False, projections=200, basis=16,
                     detection_threshold=15, contamination=0.15, neighbors=160, real_outliers_threshold=0.85)
-    # Original values: detection_threshold=15, contamination=0.01, neighbors=10, real_outliers_threshold=0.5)
-    # Best combo: detection_threshold=15, contamination=0.15, neighbors=160, real_outliers_threshold=0.5 || accuracy 60%
-    # Good combo with less FN: detection_threshold=15, contamination=0.10, neighbors=300, real_outliers_threshold=0.5 || accuracy 56%
+    # Original values: nhours=4, basis=8, contamination=0.01, neighbors=10, real_outliers_threshold=0.5)
+    # Best combo: nhours=8, basis=16, contamination=0.15, neighbors=160, real_outliers_threshold=0.5 || accuracy 60%
+    # Good combo with less FN: nhours=8, basis=16, contamination=0.10, neighbors=300, real_outliers_threshold=0.5 || accuracy 56%
     
-    # Calculate Random Forest scores
+    # Calculate Random Forest scores (not used)
     # msa_instance.rf()
     
     # Calculate magnitude, shape, and amplitudec
