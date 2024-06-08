@@ -3,3 +3,6 @@ venv
 
 # # Ignore the data
 # data
+
+# Ignore large files
+results/X.npy

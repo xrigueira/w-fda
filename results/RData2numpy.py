@@ -3,7 +3,7 @@ import rpy2.robjects as robjects
 
 """Load the RData file and convert the R object to a binarized NumPy array.
 """
-method = 'MUOD' # 'MOUT' or 'MUOD'
+method = 'MOUT' # 'MOUT' or 'MUOD'
 
 if method == 'MOUT':
 
@@ -28,9 +28,9 @@ numpy_array = np.array(my_data)
 numpy_array -= 1
 
 # Binarize the NumPy array
-total_length_data = 15096
+total_length_data = 15096 # Len msa obtained and printed in main
 y = np.zeros(total_length_data)
 y[numpy_array] = 1
 
 # Save the NumPy array to a file (e.g., in .npy format)
-np.save(f'results/y_{method.lower()}.npy', numpy_array)
+np.save(f'results/y_{method.lower()}.npy', y, allow_pickle=False, fix_imports=False)
