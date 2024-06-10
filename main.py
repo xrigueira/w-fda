@@ -532,7 +532,7 @@ class MSA():
 
 if __name__ == '__main__':
     
-    station = 901
+    station = 907
     
     # Create a class instance
     msa_instance = MSA(station=station, hours=True, nhours=8, simulation=False, search=False, projections=200, basis=16,
