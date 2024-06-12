@@ -536,7 +536,7 @@ if __name__ == '__main__':
     
     # Create a class instance
     msa_instance = MSA(station=station, hours=True, nhours=8, simulation=False, search=False, projections=200, basis=16,
-                    detection_threshold=15, contamination=0.15, neighbors=160, real_outliers_threshold=0.85)
+                    detection_threshold=15, contamination=0.15, neighbors=160, real_outliers_threshold=0.55)
     # Original values: nhours=4, basis=8, contamination=0.01, neighbors=10, real_outliers_threshold=0.5)
     # Best combo: nhours=8, basis=16, contamination=0.15, neighbors=160, real_outliers_threshold=0.5 || accuracy 60%
     # Good combo with less FN: nhours=8, basis=16, contamination=0.10, neighbors=300, real_outliers_threshold=0.5 || accuracy 56%
@@ -553,8 +553,8 @@ if __name__ == '__main__':
     # Detect outliers if any
     msa_instance.outlier_detector()
     
-    # Plot the results
-    msa_instance.plots()
+    # # Plot the results
+    # msa_instance.plots()
     
     # Calculate accuracy
     accuracy, confusion_matrix = msa_instance.metric()
