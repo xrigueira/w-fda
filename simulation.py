@@ -211,7 +211,7 @@ if __name__ == '__main__':
     df_error_rate = pd.DataFrame(columns=['contamination', 'outliergram', 'muod', 'ms', 'msa'])
     
     # Define contamination levels:
-    contaminations = [0, 0.01, 0.02, 0.05, 0.1, 0.2]
+    contaminations = [0, 0.01, 0.02, 0.05, 0.1, 0.15, 0.2]
     
     # Define lists to store the results and get their mean
     accuracy_outliergram, accuracy_muod, accuracy_ms, accuracy_msa = [], [], [], []
@@ -222,7 +222,7 @@ if __name__ == '__main__':
     
     for contamination in contaminations:
         
-        for i in range(1):
+        for i in range(100):
 
             # Print the current contamination level
             print('Contamination level:', contamination, 'Iteration:', i)
