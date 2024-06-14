@@ -6,6 +6,7 @@ import statistics as stats
 import rpy2.robjects as robjects
 
 from datetime import datetime
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 from main import MSA
 
@@ -146,88 +147,34 @@ class simulator(MSA):
         real_outliers = [1 if i in real_outliers else 0 for i in range(1, self.N + 11)]
 
         # Calculate the accuracy score for each method
-        accuracy_outliergram = sum([1 if outliers_outliergram[i] == real_outliers[i] else 0 for i in range(len(outliers_outliergram))]) / len(real_outliers)
-        accuracy_muod = sum([1 if outliers_muod[i] == real_outliers[i] else 0 for i in range(len(outliers_muod))]) / len(real_outliers)
-        accuracy_ms = sum([1 if outliers_ms[i] == real_outliers[i] else 0 for i in range(len(outliers_ms))]) / len(real_outliers)
-        accuracy_msa = sum([1 if outliers_msa[i] == real_outliers[i] else 0 for i in range(len(outliers_msa))]) / len(real_outliers)
+        accuracy_outliergram = accuracy_score(outliers_outliergram, real_outliers)
+        accuracy_muod = accuracy_score(outliers_muod, real_outliers)
+        accuracy_ms = accuracy_score(outliers_ms, real_outliers)
+        accuracy_msa = accuracy_score(outliers_msa, real_outliers)
 
         # Calculate the precision score for each method
-        precision_outliergram = sum([1 if outliers_outliergram[i] == real_outliers[i] else 0 for i in range(len(outliers_outliergram))]) / len(real_outliers)
-        precision_muod = sum([1 if outliers_muod[i] == real_outliers[i] else 0 for i in range(len(outliers_muod))]) / len(real_outliers)
-        precision_ms = sum([1 if outliers_ms[i] == real_outliers[i] else 0 for i in range(len(outliers_ms))]) / len(real_outliers)
-        precision_msa = sum([1 if outliers_msa[i] == real_outliers[i] else 0 for i in range(len(outliers_msa))]) / len(real_outliers)
+        precision_outliergram = precision_score(outliers_outliergram, real_outliers, zero_division=1)
+        precision_muod = precision_score(outliers_muod, real_outliers, zero_division=1)
+        precision_ms = precision_score(outliers_ms, real_outliers, zero_division=1)
+        precision_msa = precision_score(outliers_msa, real_outliers, zero_division=1)
 
         # Calculate the recall score for each method
-        recall_outliergram = sum([1 if outliers_outliergram[i] == real_outliers[i] else 0 for i in range(len(outliers_outliergram))]) / len(outliers_outliergram)
-        recall_muod = sum([1 if outliers_muod[i] == real_outliers[i] else 0 for i in range(len(outliers_muod))]) / len(outliers_muod)
-        recall_ms = sum([1 if outliers_ms[i] == real_outliers[i] else 0 for i in range(len(outliers_ms))]) / len(outliers_ms)
-        recall_msa = sum([1 if outliers_msa[i] == real_outliers[i] else 0 for i in range(len(outliers_msa))]) / len(outliers_msa)
+        recall_outliergram = recall_score(outliers_outliergram, real_outliers, zero_division=1)
+        recall_muod = recall_score(outliers_muod, real_outliers, zero_division=1)
+        recall_ms = recall_score(outliers_ms, real_outliers, zero_division=1)
+        recall_msa = recall_score(outliers_msa, real_outliers, zero_division=1)
 
         # Calculate the F1 score for each method
-        f1_outliergram = 2 * (precision_outliergram * recall_outliergram) / (precision_outliergram + recall_outliergram)
-        f1_muod = 2 * (precision_muod * recall_muod) / (precision_muod + recall_muod)
-        f1_ms = 2 * (precision_ms * recall_ms) / (precision_ms + recall_ms)
-        f1_msa = 2 * (precision_msa * recall_msa) / (precision_msa + recall_msa)
+        f1_outliergram = f1_score(outliers_outliergram, real_outliers, zero_division=1)
+        f1_muod = f1_score(outliers_muod, real_outliers, zero_division=1)
+        f1_ms = f1_score(outliers_ms, real_outliers, zero_division=1)
+        f1_msa = f1_score(outliers_msa, real_outliers, zero_division=1)
 
         # Calculate the error rate
-        error_rate_outliergram = 1 - sum([1 if outliers_outliergram[i] == real_outliers[i] else 0 for i in range(len(outliers_outliergram))]) / len(real_outliers)
-        error_rate_muod = 1 - sum([1 if outliers_muod[i] == real_outliers[i] else 0 for i in range(len(outliers_muod))]) / len(real_outliers)
-        error_rate_accuracy_ms = 1 - sum([1 if outliers_ms[i] == real_outliers[i] else 0 for i in range(len(outliers_ms))]) / len(real_outliers)
-        error_rate_accuracy_msa = 1 - sum([1 if outliers_msa[i] == real_outliers[i] else 0 for i in range(len(outliers_msa))]) / len(real_outliers)
-
-        # Calculate the Jaccard similarity index
-        intersection_outliergram = len(set(outliers_outliergram).intersection(set(real_outliers)))
-        union_outliergram = len(set(outliers_outliergram).union(set(real_outliers)))
-        jaccard_index_outliergram = intersection_outliergram / union_outliergram if union_outliergram > 0 else 1.0
-        
-        intersection_muod = len(set(outliers_muod).intersection(set(real_outliers)))
-        union_muod = len(set(outliers_muod).union(set(real_outliers)))
-        jaccard_index_muod = intersection_muod / union_muod if union_muod > 0 else 1.0
-
-        intersection_ms = len(set(outliers_ms).intersection(set(real_outliers)))
-        union_ms = len(set(outliers_ms).union(set(real_outliers)))
-        jaccard_index_ms = intersection_ms / union_ms if union_ms > 0 else 1.0
-
-        intersection_msa = len(set(outliers_msa).intersection(set(real_outliers)))
-        union_msa = len(set(outliers_msa).union(set(real_outliers)))
-        jaccard_index_msa = intersection_msa / union_msa if union_msa > 0 else 1.0
-        
-        # # Retrive results and turn into sets
-        # outliers_outliergram = set(list(self.outliers_outliergram))
-        # outliers_muod = set(list(self.outliers_muod))
-        # print(list(self.outliers_ms))
-        # outliers_ms = set(list(self.outliers_ms))
-        # if len(self.index_outliers) == 0:
-        #     outliers_msa = []
-        # else:
-        #     outliers_msa = set([num + 1 for num in list(self.index_outliers[0])])
-        # real_outliers = set(self.real_outliers)
-        
-        # # Calculate the length of each intersection and union
-        # intersection_outliergram = len(real_outliers.intersection(outliers_outliergram))
-        # union_outliergram = len(real_outliers.union(outliers_outliergram))
-        # intersection_muod = len(real_outliers.intersection(outliers_muod))
-        # union_muod = len(real_outliers.union(outliers_muod))
-        # intersection_ms = len(real_outliers.intersection(outliers_ms))
-        # union_ms = len(real_outliers.union(outliers_ms))
-        # intersection_msa = len(real_outliers.intersection(outliers_msa))
-        # union_msa = len(real_outliers.union(outliers_msa))
-
-        # # Calculate the length of each intersection and union
-        # intersection_outliergram = len(real_outliers.intersection(outliers_outliergram))
-        # union_outliergram = len(real_outliers.union(outliers_outliergram))
-        # intersection_muod = len(real_outliers.intersection(outliers_muod))
-        # union_muod = len(real_outliers.union(outliers_muod))
-        # intersection_ms = len(real_outliers.intersection(outliers_ms))
-        # union_ms = len(real_outliers.union(outliers_ms))
-        # intersection_msa = len(real_outliers.intersection(outliers_msa))
-        # union_msa = len(real_outliers.union(outliers_msa))
-        
-        # # Get the Jaccard similarity indix for each method
-        # jaccard_index_outliergram = intersection_outliergram / union_outliergram if union_outliergram > 0 else 1.0
-        # jaccard_index_muod = intersection_muod / union_muod if union_muod > 0 else 1.0
-        # jaccard_index_ms = intersection_ms / union_ms if union_ms > 0 else 1.0
-        # jaccard_index_msa = intersection_msa / union_msa if union_msa > 0 else 1.0
+        error_rate_outliergram = 1 - accuracy_outliergram
+        error_rate_muod = 1 - accuracy_muod
+        error_rate_accuracy_ms = 1 - accuracy_ms
+        error_rate_accuracy_msa = 1 - accuracy_msa
         
         results = {'accuracy_outliergram': accuracy_outliergram,
                     'accuracy_muod': accuracy_muod,
@@ -249,11 +196,6 @@ class simulator(MSA):
                     'error_rate_muod': error_rate_muod,
                     'error_rate_accuracy_ms': error_rate_accuracy_ms,
                     'error_rate_accuracy_msa': error_rate_accuracy_msa,
-                    'jaccard_outliergram': jaccard_index_outliergram,
-                    'jaccard_muod': jaccard_index_muod,
-                    'jaccard_ms': jaccard_index_ms,
-                    'jaccard_msa': jaccard_index_msa,
-                    
                     }
         
         return results
@@ -267,7 +209,6 @@ if __name__ == '__main__':
     df_recall = pd.DataFrame(columns=['contamination', 'outliergram', 'muod', 'ms', 'msa'])
     df_f1 = pd.DataFrame(columns=['contamination', 'outliergram', 'muod', 'ms', 'msa'])
     df_error_rate = pd.DataFrame(columns=['contamination', 'outliergram', 'muod', 'ms', 'msa'])
-    df_jaccard = pd.DataFrame(columns=['contamination', 'outliergram', 'muod', 'ms', 'msa'])
     
     # Define contamination levels:
     contaminations = [0, 0.01, 0.02, 0.05, 0.1, 0.2]
@@ -278,11 +219,13 @@ if __name__ == '__main__':
     recall_outliergram, recall_muod, recall_ms, recall_msa = [], [], [], []
     f1_outliergram, f1_muod, f1_ms, f1_msa = [], [], [], []
     error_rate_outliergram, error_rate_muod, error_rate_ms, error_rate_msa = [], [], [], []
-    jaccard_outliergram, jaccard_muod, jaccard_ms, jaccard_msa = [], [], [], []
     
     for contamination in contaminations:
         
-        for i in range(100):
+        for i in range(1):
+
+            # Print the current contamination level
+            print('Contamination level:', contamination, 'Iteration:', i)
             
             # Set up timer
             start = time.time()
@@ -350,11 +293,6 @@ if __name__ == '__main__':
             error_rate_muod.append(results['error_rate_muod'])
             error_rate_ms.append(results['error_rate_accuracy_ms'])
             error_rate_msa.append(results['error_rate_accuracy_msa'])
-
-            jaccard_outliergram.append(results['jaccard_outliergram'])
-            jaccard_muod.append(results['jaccard_muod'])
-            jaccard_ms.append(results['jaccard_ms'])
-            jaccard_msa.append(results['jaccard_msa'])
             
             print((time.time() - start) / (60), 'minutes elapsed')
         
@@ -363,7 +301,6 @@ if __name__ == '__main__':
         df_recall.loc[len(df_recall.index)] = [contamination, stats.mean(recall_outliergram), stats.mean(recall_muod), stats.mean(recall_ms), stats.mean(recall_msa)]
         df_f1.loc[len(df_f1.index)] = [contamination, stats.mean(f1_outliergram), stats.mean(f1_muod), stats.mean(f1_ms), stats.mean(f1_msa)]
         df_error_rate.loc[len(df_error_rate.index)] = [contamination, stats.mean(error_rate_outliergram), stats.mean(error_rate_muod), stats.mean(error_rate_ms), stats.mean(error_rate_msa)]
-        df_jaccard.loc[len(df_jaccard.index)] = [contamination, stats.mean(jaccard_outliergram), stats.mean(jaccard_muod), stats.mean(jaccard_ms), stats.mean(jaccard_msa)]
         
         # Clean the results lists
         accuracy_outliergram, accuracy_muod, accuracy_ms, accuracy_msa = [], [], [], []
@@ -371,7 +308,6 @@ if __name__ == '__main__':
         recall_outliergram, recall_muod, recall_ms, recall_msa = [], [], [], []
         f1_outliergram, f1_muod, f1_ms, f1_msa = [], [], [], []
         error_rate_outliergram, error_rate_muod, error_rate_ms, error_rate_msa = [], [], [], []
-        jaccard_outliergram, jaccard_muod, jaccard_ms, jaccard_msa = [], [], [], []
     
     # Save the results
     df_accuracy.to_csv('results/accuracy.csv', sep=',', encoding='utf-8', index=True)
@@ -379,4 +315,3 @@ if __name__ == '__main__':
     df_recall.to_csv('results/recall.csv', sep=',', encoding='utf-8', index=True)
     df_f1.to_csv('results/f1.csv', sep=',', encoding='utf-8', index=True)
     df_error_rate.to_csv('results/error_rate.csv', sep=',', encoding='utf-8', index=True)
-    df_jaccard.to_csv('results/jaccard.csv', sep=',', encoding='utf-8', index=True)
