@@ -5,4 +5,7 @@ venv
 # data
 
 # Ignore large files
-results/X.npy
+results/X_901.npy
+results/X_905.npy
+results/X_906.npy
+results/X_907.npy

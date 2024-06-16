@@ -472,12 +472,12 @@ class MSA():
         print('Total number of samples', len(self.msa))
         y_gt = np.zeros(len(self.msa))
         y_gt[real_outliers_indices] = 1
-        # np.save('y_gt.npy', y_gt, allow_pickle=False, fix_imports=False)
+        np.save(f'y_gt_{self.station}.npy', y_gt, allow_pickle=False, fix_imports=False)
         
         # Get msa binary list
         y_msa = np.zeros(len(self.msa))
         y_msa[outliers_indices] = 1
-        # np.save('y_msa.npy', y_msa, allow_pickle=False, fix_imports=False)
+        np.save(f'y_msa_{self.station}.npy', y_msa, allow_pickle=False, fix_imports=False)
 
         # Get accuracy
         accuracy = np.sum(y_gt == y_msa) / len(y_gt)
@@ -532,14 +532,13 @@ class MSA():
 
 if __name__ == '__main__':
     
-    station = 907
+    station = 901
     
     # Create a class instance
     msa_instance = MSA(station=station, hours=True, nhours=8, simulation=False, search=False, projections=200, basis=16,
-                    detection_threshold=15, contamination=0.15, neighbors=160, real_outliers_threshold=0.55)
+                    detection_threshold=15, contamination=0.15, neighbors=160, real_outliers_threshold=0.65)
     # Original values: nhours=4, basis=8, contamination=0.01, neighbors=10, real_outliers_threshold=0.5)
-    # Best combo: nhours=8, basis=16, contamination=0.15, neighbors=160, real_outliers_threshold=0.5 || accuracy 60%
-    # Good combo with less FN: nhours=8, basis=16, contamination=0.10, neighbors=300, real_outliers_threshold=0.5 || accuracy 56%
+
     
     # Calculate Random Forest scores (not used)
     # msa_instance.rf()
@@ -562,5 +561,5 @@ if __name__ == '__main__':
     print('Confusion matrix:\n', confusion_matrix)
 
     # Clean the data
-    msa_instance.cleanser()
+    # msa_instance.cleanser()
 
