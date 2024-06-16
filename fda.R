@@ -628,10 +628,10 @@ my_muod <- function(P, saved_data) {
 
 }
 
-my_ms <- function(saved_data, projections) {
+my_ms <- function(P, saved_data, projections) {
 
     # Determine the dimensions of the matrix
-    p <- 96
+    p <- P
     n <- nrow(saved_data) / p
     d <- ncol(saved_data)
 
@@ -641,7 +641,7 @@ my_ms <- function(saved_data, projections) {
     # Fill the array with data from the data.frame
     for (i in 1:6) {
 
-        matrix_data[, , i] <- matrix(saved_data[, i], ncol = 96, byrow = TRUE)
+        matrix_data[, , i] <- matrix(saved_data[, i], ncol = p, byrow = TRUE)
 
     }
 

@@ -27,18 +27,25 @@ for (col_index in 1:6) {
 
 }
 
-# Implement MOUT
-outliers_outliergram <- my_outliergram(P = 32, matrix_list)
-print(outliers_outliergram)
+# # Implement MOUT
+# outliers_outliergram <- my_outliergram(P = 32, matrix_list)
+# print(outliers_outliergram)
 
-# Save outliergram results
-save(outliers_outliergram, file="indices_outliers_MOUT.RData")
+# # Save outliergram results
+# save(outliers_outliergram, file="indices_outliers_MOUT.RData")
 
 # Implement MUOD
 saved_df <- data_saver(N = num_days, L = 6, P = 32, data = matrix_list)
 
-outliers_muod <- my_muod(P = 32, saved_data = saved_df)
-print(outliers_muod)
+# outliers_muod <- my_muod(P = 32, saved_data = saved_df)
+# print(outliers_muod)
 
-# Save MUOD results
-save(outliers_muod, file="indices_outliers_MUOD.RData")
+# # Save MUOD results
+# save(outliers_muod, file="indices_outliers_MUOD.RData")
+
+# Implement MS
+outliers_ms <- my_ms(P = 32, saved_data = saved_df, projections = 200)
+print(outliers_ms)
+
+# Save MS results
+save(outliers_ms, file="indices_outliers_MS.RData")
