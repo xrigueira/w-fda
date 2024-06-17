@@ -40,7 +40,7 @@ y_rf_0, y_rf_1 = np.where(y_rf == 0)[0], np.where(y_rf == 1)[0]
 
 # Get the values of each variable when the ground truth and each model's prediction is 0 or 1
 var_names = ['am', 'co', 'do', 'ph', 'tu', 'wt']
-methods = ['gt', 'mout', 'muod', 'ms', 'mmsa', 'svm', 'lr', 'rf']
+methods = ['Ground truth', 'MOUT', 'MUOD', 'MS', 'MMSA', 'SVM', 'LR', 'RF']
 
 # Ground truth
 am_gt_0, am_gt_1 = X_reshaped[y_gt_0, :, 0].flatten(), X_reshaped[y_gt_1, :, 0].flatten()
