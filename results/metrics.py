@@ -2,10 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
-"""This file is used to generate the confusion matrices for all methods."""
+"""This file is used to generate the confusion matrices and calculate the
+accuracy, precision, recall, F1-score, error rate and ROC-AUC curves
+for each model."""
 
 # Define the station
-station = 901
+station = 907
 
 # Read the data for the corresponding station
 y_gt = np.load(f'results/y_gt_fda_{station}.npy', allow_pickle=False, fix_imports=False) # Ground truth
@@ -84,3 +86,45 @@ print('Confusion matrix MSA:\n', confusion_matrix(y_gt, y_msa))
 print('Confusion matrix SVM:\n', confusion_matrix(y_gt, y_svm))
 print('Confusion matrix LR:\n', confusion_matrix(y_gt, y_lr))
 print('Confusion matrix RF:\n', confusion_matrix(y_gt, y_rf))
+
+# Plot the ROC-AUC curves
+from sklearn.metrics import roc_curve, roc_auc_score
+
+fpr_mout, tpr_mout, _ = roc_curve(y_gt, y_mout)
+roc_auc_score_mout = roc_auc_score(y_gt, y_mout)
+fpr_muod, tpr_muod, _ = roc_curve(y_gt, y_muod)
+roc_auc_score_muod = roc_auc_score(y_gt, y_muod)
+fpr_ms, tpr_ms, _ = roc_curve(y_gt, y_ms)
+roc_auc_score_ms = roc_auc_score(y_gt, y_ms)
+fpr_msa, tpr_msa, _ = roc_curve(y_gt, y_msa)
+roc_auc_score_msa = roc_auc_score(y_gt, y_msa)
+fpr_svm, tpr_svm, _ = roc_curve(y_gt, y_svm)
+roc_auc_score_svm = roc_auc_score(y_gt, y_svm)
+fpr_lr, tpr_lr, _ = roc_curve(y_gt, y_lr)
+roc_auc_score_lr = roc_auc_score(y_gt, y_lr)
+fpr_rf, tpr_rf, _ = roc_curve(y_gt, y_rf)
+roc_auc_score_rf = roc_auc_score(y_gt, y_rf)
+
+# basic_colors = ['red', 'blue', 'yellow', 'green', 'purple', 'orange', 'gray']
+# dark_colors = ['red', 'dodgerblue', 'mediumpurple', 'dimgrey', 'chocolate', 'goldenrod', 'green']
+# light_colors = ['salmon', 'lightskyblue', 'plum', 'darkgrey', 'orange', 'gold', 'yellowgreen']
+
+plt.figure(figsize=(10, 6))
+plt.plot(fpr_mout, tpr_mout, color='salmon', label=f'MOUT: {roc_auc_score_mout:.2f}')
+plt.plot(fpr_muod, tpr_muod, color='lightskyblue', label=f'MUOD: {roc_auc_score_muod:.2f}')
+plt.plot(fpr_ms, tpr_ms, color='gold', label=f'MS: {roc_auc_score_ms:.2f}')
+plt.plot(fpr_msa, tpr_msa, color='orange', label=f'MSA: {roc_auc_score_msa:.2f}')
+plt.plot(fpr_svm, tpr_svm, color='gray', label=f'SVM: {roc_auc_score_svm:.2f}')
+plt.plot(fpr_lr, tpr_lr, color='plum', label=f'LR: {roc_auc_score_lr:.2f}')
+plt.plot(fpr_rf, tpr_rf, color='yellowgreen', label=f'RF: {roc_auc_score_rf:.2f}')
+plt.plot([0, 1], [0, 1], 'k--')
+
+plt.xlabel('False positive rate')
+plt.ylabel('True positive rate')
+plt.title(f'ROC curve for station {station}')
+plt.legend()
+
+# plt.show()
+
+# Save the image
+plt.savefig(f'results/roc_{station}.png', dpi=300, bbox_inches='tight')
