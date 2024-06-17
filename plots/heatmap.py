@@ -57,7 +57,7 @@ differences = np.array(differences)
 
 # Get the indices where y_gt, y_msa, y_mout, y_muod, y_rf, y_svm and y_lr are different from 0
 y_gt = np.load(f'results/y_gt_fda.npy', allow_pickle=False, fix_imports=False) # Ground truth
-y_msa = np.load(f'results/y_msa.npy', allow_pickle=False, fix_imports=False) # MSA
+y_mmsa = np.load(f'results/y_msa.npy', allow_pickle=False, fix_imports=False) # MMSA
 y_mout = np.load(f'results/y_mout.npy', allow_pickle=False, fix_imports=False) # MOUT
 y_muod = np.load(f'results/y_muod.npy', allow_pickle=False, fix_imports=False) # MUOD
 y_rf = np.load(f'results/y_rf.npy', allow_pickle=False, fix_imports=False) # RF
@@ -65,7 +65,7 @@ y_svm = np.load(f'results/y_svm.npy', allow_pickle=False, fix_imports=False) # S
 y_lr = np.load(f'results/y_lr.npy', allow_pickle=False, fix_imports=False) # LR
 
 # Put the indices in an 2D array
-ys = np.stack([y_gt, y_msa, y_mout, y_muod, y_rf, y_svm, y_lr], axis=1)
+ys = np.stack([y_gt, y_mmsa, y_mout, y_muod, y_rf, y_svm, y_lr], axis=1)
 
 # Get the indices where any subelement is not 0 and turn it into a 1D array
 indices = np.array(np.where(np.any(ys != 0, axis=1))[0])
@@ -95,7 +95,7 @@ for i in range(num_batches):
     x_labels_batch = x_labels[start_index:end_index]
 
     # Define the labels for the method's names
-    method_names = ['GT', 'MSA', 'MOUT', 'MUOD', 'RF', 'SVM', 'LR']
+    method_names = ['GT', 'MMSA', 'MOUT', 'MUOD', 'RF', 'SVM', 'LR']
 
     # Reverse the order of the variables and the method names for plotting purposes
     var_names = var_names[::-1]

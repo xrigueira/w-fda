@@ -11,7 +11,7 @@ station = 907
 
 # Read the data for the corresponding station
 y_gt = np.load(f'results/y_gt_fda_{station}.npy', allow_pickle=False, fix_imports=False) # Ground truth
-y_msa = np.load(f'results/y_msa_{station}.npy', allow_pickle=False, fix_imports=False) # MSA
+y_mmsa = np.load(f'results/y_msa_{station}.npy', allow_pickle=False, fix_imports=False) # MMSA
 y_mout = np.load(f'results/y_mout_{station}.npy', allow_pickle=False, fix_imports=False) # MOUT
 y_muod = np.load(f'results/y_muod_{station}.npy', allow_pickle=False, fix_imports=False) # MUOD
 y_ms = np.load(f'results/y_ms_{station}.npy', allow_pickle=False, fix_imports=False) # MS
@@ -21,7 +21,7 @@ y_lr = np.load(f'results/y_lr_{station}.npy', allow_pickle=False, fix_imports=Fa
 
 # Create an empyt dataframe to store the accuracies, precisions, recalls, F1-scores and error_rates
 import pandas as pd
-data = {'Method': ['MOUT', 'MUOD', 'MS', 'MSA', 'SVM', 'LR', 'RF'],
+data = {'Method': ['MOUT', 'MUOD', 'MS', 'MMSA', 'SVM', 'LR', 'RF'],
         'Accuracy': [0, 0, 0, 0, 0, 0, 0],
         'Precision': [0, 0, 0, 0, 0, 0, 0],
         'Recall': [0, 0, 0, 0, 0, 0, 0],
@@ -51,11 +51,11 @@ df.loc[2, 'Recall'] = recall_score(y_gt, y_ms)
 df.loc[2, 'F1-score'] = f1_score(y_gt, y_ms)
 df.loc[2, 'Error rate'] = 1 - accuracy_score(y_gt, y_ms)
 
-df.loc[3, 'Accuracy'] = accuracy_score(y_gt, y_msa)
-df.loc[3, 'Precision'] = precision_score(y_gt, y_msa)
-df.loc[3, 'Recall'] = recall_score(y_gt, y_msa)
-df.loc[3, 'F1-score'] = f1_score(y_gt, y_msa)
-df.loc[3, 'Error rate'] = 1 - accuracy_score(y_gt, y_msa)
+df.loc[3, 'Accuracy'] = accuracy_score(y_gt, y_mmsa)
+df.loc[3, 'Precision'] = precision_score(y_gt, y_mmsa)
+df.loc[3, 'Recall'] = recall_score(y_gt, y_mmsa)
+df.loc[3, 'F1-score'] = f1_score(y_gt, y_mmsa)
+df.loc[3, 'Error rate'] = 1 - accuracy_score(y_gt, y_mmsa)
 
 df.loc[4, 'Accuracy'] = accuracy_score(y_gt, y_svm)
 df.loc[4, 'Precision'] = precision_score(y_gt, y_svm)
@@ -82,7 +82,7 @@ from sklearn.metrics import confusion_matrix
 print('Confusion matrix MOUT:\n', confusion_matrix(y_gt, y_mout))
 print('Confusion matrix MUOD:\n', confusion_matrix(y_gt, y_muod))
 print('Confusion matrix MS:\n', confusion_matrix(y_gt, y_ms))
-print('Confusion matrix MSA:\n', confusion_matrix(y_gt, y_msa))
+print('Confusion matrix MSA:\n', confusion_matrix(y_gt, y_mmsa))
 print('Confusion matrix SVM:\n', confusion_matrix(y_gt, y_svm))
 print('Confusion matrix LR:\n', confusion_matrix(y_gt, y_lr))
 print('Confusion matrix RF:\n', confusion_matrix(y_gt, y_rf))
@@ -96,8 +96,8 @@ fpr_muod, tpr_muod, _ = roc_curve(y_gt, y_muod)
 roc_auc_score_muod = roc_auc_score(y_gt, y_muod)
 fpr_ms, tpr_ms, _ = roc_curve(y_gt, y_ms)
 roc_auc_score_ms = roc_auc_score(y_gt, y_ms)
-fpr_msa, tpr_msa, _ = roc_curve(y_gt, y_msa)
-roc_auc_score_msa = roc_auc_score(y_gt, y_msa)
+fpr_mmsa, tpr_mmsa, _ = roc_curve(y_gt, y_mmsa)
+roc_auc_score_msa = roc_auc_score(y_gt, y_mmsa)
 fpr_svm, tpr_svm, _ = roc_curve(y_gt, y_svm)
 roc_auc_score_svm = roc_auc_score(y_gt, y_svm)
 fpr_lr, tpr_lr, _ = roc_curve(y_gt, y_lr)
@@ -113,7 +113,7 @@ plt.figure(figsize=(10, 6))
 plt.plot(fpr_mout, tpr_mout, color='salmon', label=f'MOUT: {roc_auc_score_mout:.2f}')
 plt.plot(fpr_muod, tpr_muod, color='lightskyblue', label=f'MUOD: {roc_auc_score_muod:.2f}')
 plt.plot(fpr_ms, tpr_ms, color='gold', label=f'MS: {roc_auc_score_ms:.2f}')
-plt.plot(fpr_msa, tpr_msa, color='orange', label=f'MSA: {roc_auc_score_msa:.2f}')
+plt.plot(fpr_mmsa, tpr_mmsa, color='orange', label=f'MSA: {roc_auc_score_msa:.2f}')
 plt.plot(fpr_svm, tpr_svm, color='gray', label=f'SVM: {roc_auc_score_svm:.2f}')
 plt.plot(fpr_lr, tpr_lr, color='plum', label=f'LR: {roc_auc_score_lr:.2f}')
 plt.plot(fpr_rf, tpr_rf, color='yellowgreen', label=f'RF: {roc_auc_score_rf:.2f}')
