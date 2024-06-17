@@ -79,6 +79,6 @@ plt.yticks(fontsize=16)
 plt.ylabel("Nomalized values", fontsize=16)
 plt.title("Violin plot of each variable", fontsize=18)
 
-plt.savefig('plots/violins.png', dpi=300)
+plt.savefig('plots/violins.pdf', format='pdf', dpi=300, bbox_inches='tight')
 
 plt.show()

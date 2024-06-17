@@ -34,7 +34,11 @@ fd_mean.plot(color='black', label='Mean function', axes=ax2)
 ax2.set_xlabel('t', fontsize=16)
 ax2.set_ylabel('x(t)', fontsize=16)
 ax2.set_title('Functional data', fontsize=18)
+fig.suptitle('')
 plt.legend()
 
+
 plt.tight_layout()
-plt.show()
+# plt.show()
+
+plt.savefig(f'plots/fda_sample.pdf', format='pdf', dpi=300, bbox_inches='tight')
