@@ -23,7 +23,7 @@ fd_mean = FDataGrid(mean_values, fd_temperatures.grid_points,
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
-fd_temperatures.scatter(s=0.5, marker='.', axes=ax1) # Plot the measured values
+fd_temperatures.scatter(s=0.5, marker='.', edgecolor=None, axes=ax1) # Plot the measured values
 # fd_mean.scatter(s=0.5, marker='.', color='black', label='Mean values', axes=ax1) # Plot the mean values
 ax1.set_xlabel('t', fontsize=16)
 ax1.set_ylabel('x(t)', fontsize=16)
