@@ -22,9 +22,9 @@ scaler = MinMaxScaler()
 data.iloc[:, 0:-1] = scaler.fit_transform(data.iloc[:, 0:-1])
 
 # Define start and end date
-start_date = '2008-08-31 00:00:00'
-end_date = '2008-09-03 00:00:00'
-anomaly_number = 21
+start_date = '2006-10-16 00:00:00'
+end_date = '2006-10-18 00:00:00'
+anomaly_number = 4
 
 # Filter the data between those dates
 filtered_data = data[(data.index >= start_date) & (data.index <= end_date)]
@@ -42,11 +42,12 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Value')
 
 # Reduce the size of the legend
-ax.legend(fontsize='small', loc='upper left')
+ax.legend(["am", "co", "do", "ph", "tu", "wt"], fontsize='small', loc='upper left')
 
 # Save the image
 fig.subplots_adjust(bottom=0.19)
-fig.savefig(f'images_date/plot_{station}_anomaly_{anomaly_number}.png', format='png', dpi=300)
+# fig.savefig(f'plots/plot_{station}_anomaly_{anomaly_number}.png', format='png', dpi=300)
+fig.savefig(f'plots/plot_{station}_anomaly_{anomaly_number}.pdf', format='pdf', dpi=300, bbox_inches='tight')
 
 # Close the fig for better memory management
 plt.close(fig=fig)
