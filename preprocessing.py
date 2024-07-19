@@ -37,9 +37,9 @@ if __name__ == '__main__':
     
     for station in stations:
         
-            # Join the filed databases
-            joiner(station=station)
-            logging.info(f'joiner() {station} DONE')
+        # Join the filed databases
+        joiner(station=station)
+        logging.info(f'joiner() {station} DONE')
 
     # Add the Label data to all stations
     labeler(stations=stations)
