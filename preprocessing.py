@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 files = [f for f in os.listdir("raw_data") if os.path.isfile(os.path.join("raw_data", f))]
 
 varNames = [i[0:-4] for i in files] # Extract the names of the variables
-stations = [901, 905, 907] # Define with stations to process
+stations = [901, 906, 905, 907] # Define with stations to process
 
 # Define the time frame we want to use (a: months (not recommended), b: weeks, c: days). 
 timeFrame = 'c'

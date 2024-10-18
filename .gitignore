@@ -1,8 +1,9 @@
 # Ingnore the venv
 venv
 
-# # Ignore the data
-# data
+# Ignore large data files
+data/labeled_900.csv
+data/labeled_900_pro.csv
 
 # Ignore large files
 results/X_901.npy
