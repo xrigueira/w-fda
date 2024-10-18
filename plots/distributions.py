@@ -90,7 +90,7 @@ tu_907_background = data_normal_907.turbidity_907.to_numpy()
 wt_907_background = data_normal_907.water_temperature_907.to_numpy()
 
 # Plot the distribution of the each variable for the ground truth and each model's prediction
-fig, axes = plt.subplots(nrows=4, ncols=6, figsize=(20, 8))
+fig, axes = plt.subplots(nrows=4, ncols=6, figsize=(18, 10))
 
 sns.kdeplot(am_901_background, bw_adjust=0.65, fill=True, color='lightcoral', ax=axes[0, 0])
 sns.kdeplot(am_901_anomalies, bw_adjust=0.65, fill=True, color='red', ax=axes[0, 0])
