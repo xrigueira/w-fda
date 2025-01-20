@@ -124,7 +124,7 @@ plt.ylabel('True positive rate')
 plt.title(f'ROC curve for station {station}')
 plt.legend()
 
-# plt.show()
+plt.show()
 
 # Save the image
-plt.savefig(f'results/roc_{station}.png', dpi=300, bbox_inches='tight')
+# plt.savefig(f'results/roc_{station}.png', dpi=300, bbox_inches='tight')

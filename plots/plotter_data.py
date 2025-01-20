@@ -7,7 +7,7 @@ and display the anomalous curves."""
 
 def single_plot(data, label, variable_index, color, ax):
     
-    for window, label in zip(data[:1000], label[:1000]):
+    for window, label in zip(data, label): # zip(data[:1000], label[:1000])
         
         window_data = window.reshape(-1, 6)
     
@@ -18,7 +18,7 @@ def single_plot(data, label, variable_index, color, ax):
             ax.plot(window_data[:, variable_index], color='grey', alpha=0.32, linewidth=0.5)
 
 # Define the station
-station = 901
+station = 907
 
 # Define the variables and methods
 var_names = ['am', 'co', 'do', 'ph', 'tu', 'wt']
@@ -103,19 +103,25 @@ single_plot(data, y_rf, 3, 'darkgray', axes[3, 7])
 single_plot(data, y_rf, 4, 'goldenrod', axes[4, 7])
 single_plot(data, y_rf, 5, 'green', axes[5, 7])
 
-# Clean default y label and reduce font size for all axes
+# Clean defaul y label and reduce font size for all axes
 for ax in axes.flat:
     ax.set_ylabel('')
     ax.tick_params(axis='both', which='major', labelsize=6)
 
 # Set the title for each model
 for i, ax in enumerate(axes[0]):
-    ax.set_title(methods[i])
+    if methods[i] == 'Ground truth':
+        ax.set_title(methods[i], fontname='Arial', fontsize=14, fontweight='bold')
+    else:
+        ax.set_title(methods[i], fontname='Arial', fontsize=14)
 
 # Set the y label for each variable
 for i, ax in enumerate(axes):
     ax[0].set_ylabel(var_names[i])
 
+fig.suptitle(f'Anomalous time series for station {station}', fontname='Arial', fontsize=16)
+
 # plt.show()
 
-plt.savefig('plots/time_series.pdf', format='pdf', dpi=300, bbox_inches='tight')
+# Save the plot
+plt.savefig(f'plots/time_series_{station}.pdf', format='pdf', dpi=300, bbox_inches='tight')
