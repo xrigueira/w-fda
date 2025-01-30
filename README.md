@@ -7,26 +7,32 @@
 ## Requirements
 To run the code in this repository, you need the following libraries and tools:
 
-    - Python 3.9.x
-    - R 4.3.1
-    - NumPy
-    - pandas
-    - rpy2
-    - scikit-learn
-    - matplotlib
-    - kneed 0.8.3
+- Python 3.9.x
+- R 4.3.1
+- NumPy
+- pandas
+- rpy2
+- fda
+- fda.usc
+- roahd
+- fda-outlier
+- statsmodels
+- kneed 0.8.3
+- scikit-learn
+- matplotlib
 
 ## Citation
 If you find this repository useful in your research, please consider citing the following paper:
 
 ```
-@inproceedings{
-verma2024climode,
-title={Clim{ODE}: Climate Forecasting With Physics-informed Neural {ODE}s},
-author={Yogesh Verma and Markus Heinonen and Vikas Garg},
-booktitle={The Twelfth International Conference on Learning Representations},
-year={2024},
-url={https://openreview.net/forum?id=xuY33XhEGR}
+@article{Rigueira2025,
+    title={Multivariate functional data analysis and machine learning methods for anomaly detection in water quality data},
+    author={Xurxo Rigueira and David Olivieri and Maria Araujo and Angeles Saavedra and Maria Pazo},
+    journal={},
+    volume={}
+    year={2025},
+    doi={}
+    issn={}
 }
 ```
 
@@ -35,10 +41,18 @@ The repository contains the following relevant directories and files:
 
 ```
 w-fda
-   |-- 10m_u_component_of_wind
-   |-- 10m_v_component_of_wind
-   |-- 2m_temperature
-   |-- constants
-   |-- geopotential_500
-   |-- temperature_850
+   |-- data: preprocessed data.
+   |-- plots: plots from the paper and their code.
+   |-- preprocessors: code to preprocess the raw data.
+   |-- results: prediction results and code to analyze and plot them.
+   |-- raw-data: original data before preprocessing.
 ```
+
+## Overview of relevant files and usage
+
+* `preprocessing.py`: call to the preprocessors to join all variables in a single database, perform labelling, imputation, and smoothing.
+* `fda.R`: contains the functions to build MMSA and the implemenation of the benchmark functional models --MUOD, MOUT, and MS--, and the Monte Carlo simulation.
+* `mout_muod_ms.R`: code to execute the benchmark functional models.
+* `simulation.py`: code to run the Monte Carlo simmulation.
+* `outDec.py`: code of the nonparametric outlier detector of MMSA.
+* `main.py`: main file to obtain MMSA results on each station.
