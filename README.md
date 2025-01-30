@@ -1,5 +1,5 @@
 # Multivariate functional data analysis and machine learning methods for anomaly detection in water quality data
- This repository containes the code corresponding to the functional data analysis and results parts "Multivariate functional data analysis and machine learning methods for anomaly detection in water quality data" research paper by Xurxo Rigueira, David Olivieri, Maria Araujo, Angeles Saavedra and Maria Pazo.
+ This repository containes the code corresponding to the functional data analysis and results parts of the research paper entitled "Multivariate functional data analysis and machine learning methods for anomaly detection in water quality data" authored by Xurxo Rigueira, David Olivieri, Maria Araujo, Angeles Saavedra and Maria Pazo.
  <p align="center">
   <img src="https://github.com/xrigueira/w-fda/blob/main/plots/graphical_abstract.pdf" />
  </p>
