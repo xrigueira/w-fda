@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
+from matplotlib import rcParams
+rcParams['font.family'] = 'monospace'
 
 # Set random seed for reproducibility
 np.random.seed(42)
@@ -37,10 +39,14 @@ plt.plot(x, shape_outlier, color="blue", label="Shape outlier", linewidth=2)
 plt.plot(x, amplitude_outlier, color="green", label="Amplitude outlier", linewidth=2)
 
 # Add labels and legend
-plt.title("Functional data with outliers")
-plt.xlabel("Domain")
-plt.ylabel("Value")
+plt.title("Functional data with outliers", fontname="Arial", fontsize=18)
+plt.xlabel("Domain", fontsize=16)
+plt.ylabel("Value", fontsize=16)
 plt.legend()
+
+# Edit ticks size
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
 # plt.grid(True)
 
 # plt.show()

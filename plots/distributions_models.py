@@ -235,7 +235,7 @@ for i, ax in enumerate(axes[0]):
 for i, ax in enumerate(axes):
     ax[0].set_ylabel(var_names[i])
 
-fig.suptitle(f'Data distribution of ground truth and model predictions for station {station}', fontname='Arial', fontsize=18)
+fig.suptitle(f'Data distribution of ground truth and model predictions for station {station}', fontname='Arial', fontsize=16)
 
 # plt.show()
 

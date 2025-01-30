@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
+from matplotlib import rcParams
+rcParams['font.family'] = 'monospace'
 
 """This file is used to plot the univariate data
 and display the anomalous curves."""
@@ -13,12 +15,12 @@ def single_plot(data, label, variable_index, color, ax):
     
         # Plot the first variable (column 0)
         if label == 1:
-            ax.plot(window_data[:, variable_index], color=color, linewidth=1.5)
+            ax.plot(window_data[:, variable_index], color=color, linewidth=1)
         else:
-            ax.plot(window_data[:, variable_index], color='grey', alpha=0.32, linewidth=0.5)
+            ax.plot(window_data[:, variable_index], color='grey', alpha=0.05, linewidth=0.1)
 
 # Define the station
-station = 907
+station = 901
 
 # Define the variables and methods
 var_names = ['am', 'co', 'do', 'ph', 'tu', 'wt']
@@ -43,7 +45,7 @@ fig, axes = plt.subplots(nrows=6, ncols=8, sharex=True, figsize=(16, 6))
 single_plot(data, y_gt, 0, 'red', axes[0, 0])
 single_plot(data, y_gt, 1, 'blue', axes[1, 0])
 single_plot(data, y_gt, 2, 'purple', axes[2, 0])
-single_plot(data, y_gt, 3, 'darkgray', axes[3, 0])
+single_plot(data, y_gt, 3, 'black', axes[3, 0])
 single_plot(data, y_gt, 4, 'goldenrod', axes[4, 0])
 single_plot(data, y_gt, 5, 'green', axes[5, 0])
 
@@ -51,7 +53,7 @@ single_plot(data, y_gt, 5, 'green', axes[5, 0])
 single_plot(data, y_mout, 0, 'red', axes[0, 1])
 single_plot(data, y_mout, 1, 'blue', axes[1, 1])
 single_plot(data, y_mout, 2, 'purple', axes[2, 1])
-single_plot(data, y_mout, 3, 'darkgray', axes[3, 1])
+single_plot(data, y_mout, 3, 'black', axes[3, 1])
 single_plot(data, y_mout, 4, 'goldenrod', axes[4, 1])
 single_plot(data, y_mout, 5, 'green', axes[5, 1])
 
@@ -59,7 +61,7 @@ single_plot(data, y_mout, 5, 'green', axes[5, 1])
 single_plot(data, y_muod, 0, 'red', axes[0, 2])
 single_plot(data, y_muod, 1, 'blue', axes[1, 2])
 single_plot(data, y_muod, 2, 'purple', axes[2, 2])
-single_plot(data, y_muod, 3, 'darkgray', axes[3, 2])
+single_plot(data, y_muod, 3, 'black', axes[3, 2])
 single_plot(data, y_muod, 4, 'goldenrod', axes[4, 2])
 single_plot(data, y_muod, 5, 'green', axes[5, 2])
 
@@ -67,7 +69,7 @@ single_plot(data, y_muod, 5, 'green', axes[5, 2])
 single_plot(data, y_ms, 0, 'red', axes[0, 3])
 single_plot(data, y_ms, 1, 'blue', axes[1, 3])
 single_plot(data, y_ms, 2, 'purple', axes[2, 3])
-single_plot(data, y_ms, 3, 'darkgray', axes[3, 3])
+single_plot(data, y_ms, 3, 'black', axes[3, 3])
 single_plot(data, y_ms, 4, 'goldenrod', axes[4, 3])
 single_plot(data, y_ms, 5, 'green', axes[5, 3])
 
@@ -75,7 +77,7 @@ single_plot(data, y_ms, 5, 'green', axes[5, 3])
 single_plot(data, y_msa, 0, 'red', axes[0, 4])
 single_plot(data, y_msa, 1, 'blue', axes[1, 4])
 single_plot(data, y_msa, 2, 'purple', axes[2, 4])
-single_plot(data, y_msa, 3, 'darkgray', axes[3, 4])
+single_plot(data, y_msa, 3, 'black', axes[3, 4])
 single_plot(data, y_msa, 4, 'goldenrod', axes[4, 4])
 single_plot(data, y_msa, 5, 'green', axes[5, 4])
 
@@ -83,7 +85,7 @@ single_plot(data, y_msa, 5, 'green', axes[5, 4])
 single_plot(data, y_svm, 0, 'red', axes[0, 5])
 single_plot(data, y_svm, 1, 'blue', axes[1, 5])
 single_plot(data, y_svm, 2, 'purple', axes[2, 5])
-single_plot(data, y_svm, 3, 'darkgray', axes[3, 5])
+single_plot(data, y_svm, 3, 'black', axes[3, 5])
 single_plot(data, y_svm, 4, 'goldenrod', axes[4, 5])
 single_plot(data, y_svm, 5, 'green', axes[5, 5])
 
@@ -91,7 +93,7 @@ single_plot(data, y_svm, 5, 'green', axes[5, 5])
 single_plot(data, y_lr, 0, 'red', axes[0, 6])
 single_plot(data, y_lr, 1, 'blue', axes[1, 6])
 single_plot(data, y_lr, 2, 'purple', axes[2, 6])
-single_plot(data, y_lr, 3, 'darkgray', axes[3, 6])
+single_plot(data, y_lr, 3, 'black', axes[3, 6])
 single_plot(data, y_lr, 4, 'goldenrod', axes[4, 6])
 single_plot(data, y_lr, 5, 'green', axes[5, 6])
 
@@ -99,7 +101,7 @@ single_plot(data, y_lr, 5, 'green', axes[5, 6])
 single_plot(data, y_rf, 0, 'red', axes[0, 7])
 single_plot(data, y_rf, 1, 'blue', axes[1, 7])
 single_plot(data, y_rf, 2, 'purple', axes[2, 7])
-single_plot(data, y_rf, 3, 'darkgray', axes[3, 7])
+single_plot(data, y_rf, 3, 'black', axes[3, 7])
 single_plot(data, y_rf, 4, 'goldenrod', axes[4, 7])
 single_plot(data, y_rf, 5, 'green', axes[5, 7])
 
