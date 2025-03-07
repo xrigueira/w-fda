@@ -42,7 +42,7 @@ plt.plot(x, amplitude_outlier, color="green", label="Amplitude outlier", linewid
 plt.title("Functional data with outliers", fontname="Arial", fontsize=18)
 plt.xlabel("Domain", fontsize=16)
 plt.ylabel("Value", fontsize=16)
-plt.legend()
+plt.legend(fontsize=14)
 
 # Edit ticks size
 plt.xticks(fontsize=14)
