@@ -183,7 +183,7 @@ stations = ['Station 901', 'Station 905', 'Station 906', 'Station 907']
 for i, ax in enumerate(axes):
     ax[0].set_ylabel(stations[i], fontname='Arial', fontsize=18)
 
-fig.suptitle(f'Distributions of anomalies and background events', fontname='Arial', fontsize=22)
+# fig.suptitle(f'Distributions of anomalies and background events', fontname='Arial', fontsize=22)
 plt.tight_layout()
 # plt.show()
 
